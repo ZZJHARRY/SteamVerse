@@ -629,6 +629,7 @@ module.exports = {
   top_songs,
   top_albums,
   search_songs,
+  recommendation,
   filter_games,
   game_system,
   stat,
