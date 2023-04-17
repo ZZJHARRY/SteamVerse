@@ -69,6 +69,9 @@ export default function HomePage() {
 
   return (
     <Container>
+      <h2>Welcome to Steamify!
+      </h2>
+      <Divider />
       {/* SongCard is a custom component that we made. selectedSongId && <SongCard .../> makes use of short-circuit logic to only render the SongCard if a non-null song is selected */}
       {selectedSongId && <SongCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
       <h2>Check out your song of the day:&nbsp;
