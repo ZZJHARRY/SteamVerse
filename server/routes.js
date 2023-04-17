@@ -390,4 +390,6 @@ module.exports = {
   top_albums,
   search_songs,
   filter_games,
+  game_system,
+  stat,
 }
