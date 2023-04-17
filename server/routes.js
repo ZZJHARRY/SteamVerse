@@ -308,34 +308,34 @@ WHERE app_id IN (
 
 /*************************************
 // Route 3: games/system/:statistics - Jun Wang
-/*************************************
-  const stat = async function(req, res){
-    const statistics = req.params.statistics;
-    if (statistics){
-    connection.query(`With cte As(
-        Select g.app_id, Floor(AVG(r.hours)) as average_hours
-        From Recommendations r
-        Join Game g on g.app_id = r.app_id
-        Join Operation_System o on o.app_id = g.app_id
-        Where g.rating = 'Very Positive' And o.os_name = 'win'
-        Group By g.app_id
-        )
-        Select g.title, c.average_hours
-        From Game g
-        Join cte c on c.app_id = g.app_id
-        Order by average_hours DESC;
-        `, (err, data) =>{
-        if (err || data.length === 0) {
-            console.log(err);
-            res.json({});
-        } 
-        else{
-            res.json(data)
-        }
-        }
-        )
-    }
+*************************************/
+const stat = async function(req, res){
+  const statistics = req.params.statistics;
+  if (statistics){
+  connection.query(`With cte As(
+      Select g.app_id, Floor(AVG(r.hours)) as average_hours
+      From Recommendations r
+      Join Game g on g.app_id = r.app_id
+      Join Operation_System o on o.app_id = g.app_id
+      Where g.rating = 'Very Positive' And o.os_name = 'win'
+      Group By g.app_id
+      )
+      Select g.title, c.average_hours
+      From Game g
+      Join cte c on c.app_id = g.app_id
+      Order by average_hours DESC;
+      `, (err, data) =>{
+      if (err || data.length === 0) {
+          console.log(err);
+          res.json([]);
+      } 
+      else{
+          res.json(data)
+      }
+      }
+      )
   }
+}
 
 
 /*************************************
