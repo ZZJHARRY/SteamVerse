@@ -327,7 +327,7 @@ const stat = async function(req, res){
       `, (err, data) =>{
       if (err || data.length === 0) {
           console.log(err);
-          res.json([]);
+          res.json({});
       } 
       else{
           res.json(data)
