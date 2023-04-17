@@ -250,6 +250,47 @@ const search_songs = async function(req, res) {
    // replace this with your implementation res.json([]);
 }
 
+/*************************************
+ * ROUTE 4: Filtering Games - Zijian *
+ *************************************/
+// Route 4: GET /games/filtering/:type_of_games
+const filter_games = async function(req, res) {
+  const type_of_games = req.params.type_of_games;
+  if (type_of_games === "high_positive_ratio") {
+    connection.query(`
+      With cte AS (
+        SELECT MAX(positive_ratio) AS max_ratio
+        From Game
+        WHERE date_release >= '2020-01-01')
+      SELECT app_id, title
+      FROM Game
+      WHERE date_release < '2020-01-01'
+      AND positive_ratio >= (SELECT max_ratio FROM cte)
+      `,(err,data)=>{
+        if (err || data.length === 0){
+          console.log(err)
+          res.json([]);
+        } else {
+          res.json(data);
+        }
+    });
+  } else if (type_of_games === "games_ratio") {
+    connection.query(`
+      SELECT app_id, title
+      FROM Game
+      WHERE positive_ratio > 80 AND user_reviews > 20
+      ORDER BY price_final
+      `,(err,data)=>{
+        if (err || data.length === 0){
+          console.log(err)
+          res.json([]);
+        } else {
+          res.json(data);
+        }
+    });
+  }
+}
+
 module.exports = {
   author,
   random,
@@ -260,4 +301,5 @@ module.exports = {
   top_songs,
   top_albums,
   search_songs,
+  filter_games,
 }
