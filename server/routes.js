@@ -489,6 +489,7 @@ const recommendation = async function(req, res) {
   });
 
   }
+}
 
 /************************
  * Tangchao Chen *
