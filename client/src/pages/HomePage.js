@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Container, Divider, Link } from '@mui/material';
 import { NavLink } from 'react-router-dom';
+import PUBG from '../images/PUBG.jpg';
+
 
 import LazyTable from '../components/LazyTable';
 import SongCard from '../components/SongCard';
@@ -69,24 +71,26 @@ export default function HomePage() {
 
   return (
     <Container>
-      <h2>Welcome to Steamify!
-      </h2>
+      <h1>Welcome to Steamify!
+      </h1>
       <Divider />
       {/* SongCard is a custom component that we made. selectedSongId && <SongCard .../> makes use of short-circuit logic to only render the SongCard if a non-null song is selected */}
       {selectedSongId && <SongCard songId={selectedSongId} handleClose={() => setSelectedSongId(null)} />}
-      <h2>Check out your song of the day:&nbsp;
-        <Link onClick={() => setSelectedSongId(songOfTheDay.song_id)}>{songOfTheDay.title}</Link>
+      <h2>Check out your recommended game for the current month in history:&nbsp;
+        {/* <Link onClick={() => setSelectedSongId(songOfTheDay.song_id)}>{songOfTheDay.title}</Link> */}
+        <Link >PUBG: Battlegrounds</Link>
       </h2>
-      <Divider />
+      {/* <Divider />
       <h2>Top Songs</h2>
       <LazyTable route={`http://${config.server_host}:${config.server_port}/top_songs`} columns={songColumns} />
-      <Divider />
+      <Divider /> */}
       {/* TODO (TASK 16): add a h2 heading, LazyTable, and divider for top albums. Set the LazyTable's props for defaultPageSize to 5 and rowsPerPageOptions to [5, 10] */}
-      <Divider />
+      {/* <Divider />
       <h2>Top Albums</h2>
       <LazyTable route={`http://${config.server_host}:${config.server_port}/top_albums`} columns ={albumColumns} defaultPageSize = {5} rowsPerPageOptions = {[5,10]} />
-      <Divider />
+      <Divider /> */}
       {/* TODO (TASK 17): add a paragraph (<p>text</p>) that displays the value of your author state variable from TASK 13 */}
+      <img src={PUBG} width={500} className="PUBG" alt="Game image" />
       <p>{author}</p>
       
     </Container>
