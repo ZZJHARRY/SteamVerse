@@ -502,44 +502,37 @@ const game_system = async function(req, res) {
   const want_to_operate = req.params.want_to_operate;
   const do_not_want_to_operate = req.params.do_not_want_to_operate;
   connection.query(` 
-    WITH Games_Want AS (
-   SELECT g.title, g.app_id
-   FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
-   WHERE o.os_name = ${want_to_operate} and g.date_release >= '2018-01-01'
-),
-Games_no_want AS (
-   SELECT g.title, g.app_id
-   FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
-   WHERE o.os_name =  ${do_not_want_to_operate} and g.date_release >= '2018-01-01'
-),
-Games_final AS (
-   SELECT w.title, w.app_id
-   FROM Games_Want w LEFT JOIN Games_no_want m ON w.app_id = m.app_id
-   WHERE m.app_id IS NULL
-),
-Top_10_Reviewers AS (
-   SELECT user_id
-   FROM User
-   ORDER BY reviews
-   LIMIT 10
-),
-Top_10_Reviewers_Recommend_Games AS (
-   SELECT r.app_id
-   FROM Top_10_Reviewers t JOIN Recommendations r ON t.user_id = r.user_id
-   WHERE r.is_recommended = 'true'
-),
-Top_10_Reviewers_Recommend_Games_Number AS (
-   SELECT app_id
-   FROM Top_10_Reviewers_Recommend_Games
-   GROUP BY app_id
-   HAVING COUNT(*) >= 2
-)
-SELECT title
-FROM Games_final
-WHERE app_id IN (
-   SELECT *
-   FROM Top_10_Reviewers_Recommend_Games_Number
-)
+   WITH Games_Win AS (
+        SELECT g.title, g.app_id
+        FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
+        WHERE o.os_name = "win" and g.date_release >= '2018-01-01'
+     ),
+     Games_Mac AS (
+        SELECT g.title, g.app_id
+        FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
+        WHERE o.os_name = "mac" and g.date_release >= '2018-01-01'
+     ),
+     Games_Win_Not_Mac AS (
+        SELECT w.title, w.app_id
+        FROM Games_Win w LEFT JOIN Games_Mac m ON w.app_id = m.app_id
+        WHERE m.app_id IS NULL
+     ),
+     Top_10_Reviewers AS (
+        SELECT user_id
+        FROM User
+        WHERE reviews >= 10
+        LIMIT 2000
+     ),
+    Top_10_Reviewers_Recommend_Games AS (SELECT r.app_id
+    FROM Top_10_Reviewers t JOIN Recommendations r ON t.user_id = r.user_id
+    WHERE r.is_recommended = 'true'
+    )
+    SELECT title
+     FROM Games_Win_Not_Mac
+     WHERE app_id IN (
+        SELECT *
+        FROM Top_10_Reviewers_Recommend_Games
+     );
   `, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
