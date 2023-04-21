@@ -22,8 +22,9 @@ app.get('/search_songs', routes.search_songs);
 
 
 app.get('/recommendation/:type_of_recommendation',routes.recommendation);
-app.get('/recommendation/:type_of_games',routes.games);
+app.get('/games/:type_of_games',routes.games);
 app.get('/app/:app_id', routes.game);
+app.get('/system/:app_id', routes.system);
 
 // app.get('/filtering',routes.search_filter);
 

@@ -12,6 +12,7 @@ const config = require('../config.json');
 // (see HomePage.js for example), since it depends on the state (selectedSongId) of the parent
 export default function AppCard({ appId, handleClose }) {
   const [appData, setAppData] = useState({});
+  const [systemData, setSystemData] = useState({});
   // const [albumData, setAlbumData] = useState({});
 
   const [barRadar, setBarRadar] = useState(true);
@@ -38,7 +39,12 @@ export default function AppCard({ appId, handleClose }) {
         // fetch(`http://${config.server_host}:${config.server_port}/album/${album_id}`)
         //   .then(res => res.json())
         //   .then(resJson => setAlbumData(resJson))
-        })
+        });
+      fetch( `http://${config.server_host}:${config.server_port}/system/${appId}`)
+      .then(res => res.json())
+      .then(resJson => {
+        setSystemData(resJson);
+        });
   }, [appId]);
 
   // const chartData = [
@@ -50,6 +56,26 @@ export default function AppCard({ appId, handleClose }) {
   // const handleGraphChange = () => {
   //   setBarRadar(!barRadar);
   // };
+  // console.log(appData.date_release.substring(0, 10))
+  let dateStr = '';
+  if (appData && appData.date_release) {
+    dateStr = appData.date_release.substring(0, 10);
+  }
+
+  let os_systems = '';
+  if (systemData && systemData.length >= 1) {
+    for (let i = 0; i < systemData.length; i++) {
+      if (systemData[i].os_name === 'win') {
+        os_systems += 'Windows, ';
+      } else if (systemData[i].os_name === 'mac') {
+        os_systems += 'Mac, ';
+      } else {
+        os_systems += 'Linux, ';
+      }
+      
+    }
+    os_systems = os_systems.substring(0, os_systems.length - 2)
+  }
 
   return (
     <Modal
@@ -62,26 +88,24 @@ export default function AppCard({ appId, handleClose }) {
         style={{ background: 'white', borderRadius: '16px', border: '2px solid #000', width: 600 }}
       >
         <h1>{appData.title}</h1>
-        <p>release date: {appData.date_release}</p>
-        {/* <h2>Album:&nbsp;
-          <NavLink to={`/albums/${albumData.album_id}`}>{albumData.title}</NavLink>
-        </h2> */}
+        <p>Release Date: {dateStr}</p>
 
 
         {/* //TODO */}
-        <h2>rating</h2>
-        <p>rating:{appData.rating}</p>
-        <p>positive_ratio:{appData.positive_ratio}</p>
-        <p>user_reviews:{appData.user_reviews}</p>
+        <h2>Rating Statistics</h2>
+        <p>Rating: {appData.rating}</p>
+        <p>Positive Ratio: {appData.positive_ratio} %</p>
+        <p>Number of User Reviews: {appData.user_reviews}</p>
 
 
-        <h2>system</h2>
+        <h2>System</h2>
+        <p>{os_systems}</p>
 
-        <h2>discount</h2>
+        <h2>Pricing & Discount</h2>
 
-        <p>price_final:{appData.price_final}</p>
-        <p>price_original:{appData.price_original}</p>
-        <p>discount:{appData.discount}</p>
+        <p>Final Price: $ {appData.price_final}</p>
+        <p>Original Price: $ {appData.price_original}</p>
+        <p>Discount: {appData.discount} % </p>
 
 
         {/* <p>Tempo: {songData.tempo} bpm</p>

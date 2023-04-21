@@ -271,8 +271,8 @@ const recommendation = async function(req, res) {
       WITH user_most_review AS (
       SELECT DISTINCT u.user_id
       FROM User u
-      GROUP BY u.reviews
-      ORDER BY COUNT(u.reviews) DESC LIMIT 500
+      ORDER BY reviews DESC
+      Limit 500
       ),
       user_most_game AS(
       SELECT DISTINCT r.user_id
@@ -308,27 +308,25 @@ const recommendation = async function(req, res) {
       connection.query(`
         WITH temp1 AS(
         SELECT DISTINCT r.user_id
-        FROM Game g, Recommendations r, Operation_System o
-        WHERE g.app_id = r.app_id AND g.app_id = o.app_id AND g.date_release >= '2015-01-01'
-        GROUP BY r.user_id
-        ORDER BY COUNT(r.review_id) DESC
+        FROM Game g JOIN Recommendations r ON g.app_id = r.app_id JOIN Operation_System o ON g.app_id = o.app_id
+        WHERE g.date_release >= '2015-01-01'
+        ORDER BY r.hours DESC
         LIMIT 500
         ),
         temp2 AS(
         SELECT u.user_id
         FROM User u
-        WHERE u.reviews >= 2
-        ORDER BY u.products DESC
-        LIMIT 500
+        WHERE u.products >= 500 AND u.reviews >= 30
+        LIMIT 1000
         ),
         temp3 AS(
         SELECT DISTINCT r.app_id
         FROM Recommendations r
-        WHERE r.is_recommended = True AND r. Hours >= 100 AND ( r.user_id IN (SELECT t1.user_id FROM temp1 t1) OR r.user_id IN (SELECT t2.user_id FROM temp2 t2)  )
+        WHERE r.is_recommended = True AND r. funny >= 1 AND ( r.user_id IN (SELECT t1.user_id FROM temp1 t1) OR r.user_id IN (SELECT t2.user_id FROM temp2 t2)  )
         )
-        SELECT DISTINCT g1.app_id, g1.title
-        FROM Game g1, temp3 t3
-        WHERE g1.app_id = t3.app_id AND g1.price_final > 10 AND g1.positive_ratio >= 60;
+        SELECT DISTINCT g1.title
+        FROM Game g1 JOIN temp3 t3 ON g1.app_id = t3.app_id
+        WHERE g1.price_final > 10 AND g1.positive_ratio >= 60;
         
     `, (err, data) => {
       if (err || data.length === 0) {
@@ -356,7 +354,7 @@ const recommendation = async function(req, res) {
      Games_Mac AS (
         SELECT g.title, g.app_id
         FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
-        WHERE o.os_name = "${not_want_to_operate}" and g.date_release >= '2018-01-01'
+        WHERE o.os_name = "${do_not_want_to_operate}" and g.date_release >= '2018-01-01'
      ),
      Games_Win_Not_Mac AS (
         SELECT w.title, w.app_id
@@ -366,26 +364,17 @@ const recommendation = async function(req, res) {
      Top_10_Reviewers AS (
         SELECT user_id
         FROM User
-        ORDER BY reviews
-        LIMIT 10
+        Order by reviews DESC
+        LIMIT 100
      ),
-     Top_10_Reviewers_Recommend_Games AS (
-        SELECT r.app_id
-        FROM Top_10_Reviewers t JOIN Recommendations r ON t.user_id = r.user_id
-        WHERE r.is_recommended = 'true'
-     ),
-     Top_10_Reviewers_Recommend_Games_Number AS (
-        SELECT app_id
-        FROM Top_10_Reviewers_Recommend_Games
-        GROUP BY app_id
-        HAVING COUNT(*) >= 2
-     )
-     SELECT app_id, title
-     FROM Games_Win_Not_Mac
-     WHERE app_id IN (
-        SELECT *
-        FROM Top_10_Reviewers_Recommend_Games_Number
-     )
+    Top_10_Reviewers_Recommend_Games AS (SELECT r.app_id
+    FROM Top_10_Reviewers t JOIN Recommendations r ON t.user_id = r.user_id
+    WHERE r.is_recommended = 'true'
+    )
+    SELECT distinct g.title
+    FROM Games_Win_Not_Mac g
+    Join Top_10_Reviewers_Recommend_Games t on t.app_id=g.app_id
+     ;
     `, (err, data) => {
       if (err || data.length === 0) {
         // if there is an error for some reason, or if the query is empty (this should not be possible)
@@ -500,46 +489,21 @@ const recommendation = async function(req, res) {
 //Route 2: /games/system/:type_of_system
 const game_system = async function(req, res) {
   const want_to_operate = req.params.want_to_operate;
-  const do_not_want_to_operate = req.params.do_not_want_to_operate;
   connection.query(` 
-    WITH Games_Want AS (
+   WITH Games_Operate_on_Mac AS (
    SELECT g.title, g.app_id
    FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
-   WHERE o.os_name = ${want_to_operate} and g.date_release >= '2018-01-01'
+   WHERE o.os_name = "${want_to_operate}" and g.date_release >= '2020-01-01'
 ),
-Games_no_want AS (
-   SELECT g.title, g.app_id
-   FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
-   WHERE o.os_name =  ${do_not_want_to_operate} and g.date_release >= '2018-01-01'
-),
-Games_final AS (
-   SELECT w.title, w.app_id
-   FROM Games_Want w LEFT JOIN Games_no_want m ON w.app_id = m.app_id
-   WHERE m.app_id IS NULL
-),
-Top_10_Reviewers AS (
-   SELECT user_id
-   FROM User
-   ORDER BY reviews
-   LIMIT 10
-),
-Top_10_Reviewers_Recommend_Games AS (
-   SELECT r.app_id
-   FROM Top_10_Reviewers t JOIN Recommendations r ON t.user_id = r.user_id
-   WHERE r.is_recommended = 'true'
-),
-Top_10_Reviewers_Recommend_Games_Number AS (
-   SELECT app_id
-   FROM Top_10_Reviewers_Recommend_Games
-   GROUP BY app_id
-   HAVING COUNT(*) >= 2
+Games_Number_Reviews AS (
+   SELECT g.title, g.app_id, COUNT(*) AS num_reviews
+   FROM Games_Operate_on_Mac g JOIN Recommendations r ON g.app_id = r.app_id
+   GROUP BY g.title, g.app_id
 )
-SELECT app_id,title
-FROM Games_final
-WHERE app_id IN (
-   SELECT *
-   FROM Top_10_Reviewers_Recommend_Games_Number
-)
+SELECT title, num_reviews
+FROM Games_Number_Reviews
+ORDER BY num_reviews DESC
+LIMIT 5;
   `, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
@@ -588,8 +552,31 @@ const stat = async function(req, res){
 // Route 4: GET /games/:type_of_games
 const games = async function(req, res) {
   const type_of_games = req.params.type_of_games;
+  const page = req.query.page;
+  const pageSize = req.query.page_size ?? 10;
+
   if (type_of_games === "high_positive_ratio") {
-    connection.query(`
+    if (!page){ //return all albums
+      connection.query(`
+        With cte AS (
+          SELECT MAX(positive_ratio) AS max_ratio
+          From Game
+          WHERE date_release >= '2020-01-01')
+        SELECT app_id, title
+        FROM Game
+        WHERE date_release < '2020-01-01'
+        AND positive_ratio >= (SELECT max_ratio FROM cte)
+        `,(err,data)=>{
+          if (err || data.length === 0){
+            console.log(err)
+            res.json([]);
+          } else {
+            res.json(data);
+          }
+      });
+    } else {// return albums on a certain page
+      const off_set = pageSize*(page-1)
+      connection.query(`
       With cte AS (
         SELECT MAX(positive_ratio) AS max_ratio
         From Game
@@ -598,16 +585,15 @@ const games = async function(req, res) {
       FROM Game
       WHERE date_release < '2020-01-01'
       AND positive_ratio >= (SELECT max_ratio FROM cte)
-      `,(err,data)=>{
-        if (err || data.length === 0){
-          console.log(err)
-          res.json([]);
-        } else {
-          res.json(data);
-        }
-    });
+      LIMIT ${pageSize}
+      OFFSET ${off_set}
+      `,(err, data)=>{
+        res.json(data);
+      });
+    }
   } else if (type_of_games === "games_ratio") {
-    connection.query(`
+    if (!page){ //return all albums
+      connection.query(`
       SELECT app_id, title
       FROM Game
       WHERE positive_ratio > 80 AND user_reviews > 20
@@ -619,7 +605,20 @@ const games = async function(req, res) {
         } else {
           res.json(data);
         }
-    });
+      });
+    } else {// return albums on a certain page
+      const off_set = pageSize*(page-1)
+      connection.query(`
+      SELECT app_id, title
+      FROM Game
+      WHERE positive_ratio > 80 AND user_reviews > 20
+      ORDER BY price_final
+      LIMIT ${pageSize}
+      OFFSET ${off_set}
+      `,(err, data)=>{
+        res.json(data);
+      });
+    }
   }
 }
 
@@ -640,6 +639,27 @@ const game = async function(req, res) {
       res.json({});
     } else {
       res.json(data[0]);
+    }
+  });
+}
+
+/********************************
+ * Zijian Zhang *
+ ********************************/
+// Route 6: GET /system/:app_id
+const system = async function(req, res) {
+  //  given a app_id, returns all information about the app
+  const app_id = req.params.app_id;
+  connection.query(`
+      SELECT os_name
+      FROM Operation_System
+      WHERE app_id = "${app_id}"
+      `, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
     }
   });
 }
@@ -706,5 +726,6 @@ module.exports = {
   stat,
   games,
   game,
+  system,
   // search_filter,
 }
