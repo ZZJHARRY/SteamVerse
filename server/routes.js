@@ -267,7 +267,8 @@ const recommendation = async function(req, res) {
 
   //case 1:
   if (type_of_recommendation === "recommended_by_most_active_user"){
-    connection.query(`
+    if (!page){ //return all albums
+      connection.query(`
       WITH user_most_review AS (
       SELECT DISTINCT u.user_id
       FROM User u
@@ -300,11 +301,50 @@ const recommendation = async function(req, res) {
       // so we just directly access the first element of the query results array (data)
       res.json(data);
     }
+  });}else{
+    const off_set = pageSize*(page-1)
+    connection.query(`
+      WITH user_most_review AS (
+      SELECT DISTINCT u.user_id
+      FROM User u
+      ORDER BY reviews DESC
+      Limit 500
+      ),
+      user_most_game AS(
+      SELECT DISTINCT r.user_id
+      FROM Recommendations r
+      WHERE r.is_recommended = True
+      GROUP BY r.user_id
+      ORDER BY COUNT(r.app_id) DESC LIMIT 500
+      ),
+      game_in_id AS(
+      SELECT DISTINCT r.app_id
+      FROM Recommendations r
+      WHERE r.is_recommended = True AND r.user_id IN (SELECT u1.user_id FROM user_most_review u1) AND r.user_id IN (SELECT u2.user_id FROM user_most_game u2)
+      )
+      SELECT DISTINCT g1.app_id, g1.title
+      FROM Game g1 JOIN game_in_id g2 ON g1.app_id = g2.app_id
+      OFFSET ${off_set}
+      LIMIT ${pageSize};
+  `, (err, data) => {
+    if (err || data.length === 0) {
+      // if there is an error for some reason, or if the query is empty (this should not be possible)
+      // print the error message and return an empty object instead
+      console.log(err);
+      res.json({});
+    } else {
+      // Here, we return results of the query as an object, keeping only relevant data
+      // being song_id and title which you will add. In this case, there is only one song
+      // so we just directly access the first element of the query results array (data)
+      res.json(data);
+    }
   });
+  }
 
   }else if(type_of_recommendation === "recommended_by_most_reviews"){
     //case 2
-   
+    if (!page){ //return all albums
+
       connection.query(`
         WITH temp1 AS(
         SELECT DISTINCT r.user_id
@@ -340,11 +380,51 @@ const recommendation = async function(req, res) {
         // so we just directly access the first element of the query results array (data)
         res.json(data);
       }
+    });}else{
+      const off_set = pageSize*(page-1)
+      connection.query(`
+        WITH temp1 AS(
+        SELECT DISTINCT r.user_id
+        FROM Game g JOIN Recommendations r ON g.app_id = r.app_id JOIN Operation_System o ON g.app_id = o.app_id
+        WHERE g.date_release >= '2015-01-01'
+        ORDER BY r.hours DESC
+        LIMIT 500
+        ),
+        temp2 AS(
+        SELECT u.user_id
+        FROM User u
+        WHERE u.products >= 500 AND u.reviews >= 30
+        LIMIT 1000
+        ),
+        temp3 AS(
+        SELECT DISTINCT r.app_id
+        FROM Recommendations r
+        WHERE r.is_recommended = True AND r. funny >= 1 AND ( r.user_id IN (SELECT t1.user_id FROM temp1 t1) OR r.user_id IN (SELECT t2.user_id FROM temp2 t2)  )
+        )
+        SELECT DISTINCT g1.title
+        FROM Game g1 JOIN temp3 t3 ON g1.app_id = t3.app_id
+        WHERE g1.price_final > 10 AND g1.positive_ratio >= 60
+        OFFSET ${off_set}
+        LIMIT ${pageSize};
+        
+    `, (err, data) => {
+      if (err || data.length === 0) {
+        // if there is an error for some reason, or if the query is empty (this should not be possible)
+        // print the error message and return an empty object instead
+        console.log(err);
+        res.json({});
+      } else {
+        // Here, we return results of the query as an object, keeping only relevant data
+        // being song_id and title which you will add. In this case, there is only one song
+        // so we just directly access the first element of the query results array (data)
+        res.json(data);
+      }
     });
+    }
 
   }else if(type_of_recommendation === "recommend_with_system"){
     //case 3
-
+    if (!page){ //return all albums
       connection.query(`
       WITH Games_Win AS (
         SELECT g.title, g.app_id
@@ -387,11 +467,58 @@ const recommendation = async function(req, res) {
         // so we just directly access the first element of the query results array (data)
         res.json(data);
       }
+    });}else{
+      const off_set = pageSize*(page-1)
+      connection.query(`
+      WITH Games_Win AS (
+        SELECT g.title, g.app_id
+        FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
+        WHERE o.os_name = "${want_to_operate}" and g.date_release >= '2018-01-01'
+     ),
+     Games_Mac AS (
+        SELECT g.title, g.app_id
+        FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
+        WHERE o.os_name = "${do_not_want_to_operate}" and g.date_release >= '2018-01-01'
+     ),
+     Games_Win_Not_Mac AS (
+        SELECT w.title, w.app_id
+        FROM Games_Win w LEFT JOIN Games_Mac m ON w.app_id = m.app_id
+        WHERE m.app_id IS NULL
+     ),
+     Top_10_Reviewers AS (
+        SELECT user_id
+        FROM User
+        Order by reviews DESC
+        LIMIT 100
+     ),
+    Top_10_Reviewers_Recommend_Games AS (SELECT r.app_id
+    FROM Top_10_Reviewers t JOIN Recommendations r ON t.user_id = r.user_id
+    WHERE r.is_recommended = 'true'
+    )
+    SELECT distinct g.title
+    FROM Games_Win_Not_Mac g
+    Join Top_10_Reviewers_Recommend_Games t on t.app_id=g.app_id
+    OFFSET ${off_set}
+    LIMIT ${pageSize};
+    `, (err, data) => {
+      if (err || data.length === 0) {
+        // if there is an error for some reason, or if the query is empty (this should not be possible)
+        // print the error message and return an empty object instead
+        console.log(err);
+        res.json({});
+      } else {
+        // Here, we return results of the query as an object, keeping only relevant data
+        // being song_id and title which you will add. In this case, there is only one song
+        // so we just directly access the first element of the query results array (data)
+        res.json(data);
+      }
     });
+    }
     
 
   }else if(type_of_recommendation === "top_game_curr_month_all_time"){
     //case 4
+    if (!page){ //return all albums
     connection.query(`
     With cte As(
       Select app_id, positive_ratio / 200 as rate
@@ -422,7 +549,42 @@ const recommendation = async function(req, res) {
       // so we just directly access the first element of the query results array (data)
       res.json(data);
     }
+  });}else{
+    const off_set = pageSize*(page-1)
+    connection.query(`
+    With cte As(
+      Select app_id, positive_ratio / 200 as rate
+      From Game
+      Where MONTH(date_release) = ${input_month}),
+      cte2 As(
+        Select count(*) as user_cnt
+        From User),
+      cte3 As(
+      Select app_id, count(*) as play_cnt
+      From Recommendations
+      Group by app_id)
+      Select g.app_id, g.title, c.rate+0.5*(cc.play_cnt/(select user_cnt from cte2)) as score
+      From Game g
+      Join cte c on c.app_id = g.app_id
+      Join cte3 cc on cc.app_id = g.app_id
+      Where MONTH(g.date_release) = ${input_month}
+      Order By score DESC   
+      OFFSET ${off_set}
+      LIMIT ${pageSize} 
+  `, (err, data) => {
+    if (err || data.length === 0) {
+      // if there is an error for some reason, or if the query is empty (this should not be possible)
+      // print the error message and return an empty object instead
+      console.log(err);
+      res.json({});
+    } else {
+      // Here, we return results of the query as an object, keeping only relevant data
+      // being song_id and title which you will add. In this case, there is only one song
+      // so we just directly access the first element of the query results array (data)
+      res.json(data);
+    }
   });
+  }
 
   }else if(type_of_recommendation === "random_recommendation"){
     //case 5
@@ -452,7 +614,7 @@ const recommendation = async function(req, res) {
 
   }else if (type_of_recommendation === "top_games_most_recommend"){
     //case 6
-
+    if (!page){ //return all albums
     connection.query(`
     WITH Top_10_Users AS (
       SELECT user_id
@@ -478,7 +640,37 @@ const recommendation = async function(req, res) {
       // so we just directly access the first element of the query results array (data)
       res.json(data);
     }
+  });}else{
+    const off_set = pageSize*(page-1)
+    connection.query(`
+    WITH Top_10_Users AS (
+      SELECT user_id
+      FROM User
+      ORDER BY products DESC
+      LIMIT 100
+   )
+   SELECT g.app_id, g.title
+   FROM Top_10_Users t JOIN Recommendations r ON t.user_id = r.user_id
+   JOIN Game g ON r.app_id = g.app_id
+   WHERE r.is_recommended = 'true'
+   OFFSET ${off_set}
+  LIMIT ${pageSize};
+   
+          
+  `, (err, data) => {
+    if (err || data.length === 0) {
+      // if there is an error for some reason, or if the query is empty (this should not be possible)
+      // print the error message and return an empty object instead
+      console.log(err);
+      res.json({});
+    } else {
+      // Here, we return results of the query as an object, keeping only relevant data
+      // being song_id and title which you will add. In this case, there is only one song
+      // so we just directly access the first element of the query results array (data)
+      res.json(data);
+    }
   });
+  }
 
   }
 }
