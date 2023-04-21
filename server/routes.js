@@ -644,6 +644,27 @@ const game = async function(req, res) {
   });
 }
 
+/********************************
+ * Zijian Zhang *
+ ********************************/
+// Route 6: GET /system/:app_id
+const system = async function(req, res) {
+  //  given a app_id, returns all information about the app
+  const app_id = req.params.app_id;
+  connection.query(`
+      SELECT os_name
+      FROM Operation_System
+      WHERE app_id = "${app_id}"
+      `, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data);
+    }
+  });
+}
+
 
 
 // // Route 6: GET /search_filter
@@ -706,5 +727,6 @@ module.exports = {
   stat,
   games,
   game,
+  system,
   // search_filter,
 }
