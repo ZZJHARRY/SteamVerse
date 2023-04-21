@@ -271,8 +271,8 @@ const recommendation = async function(req, res) {
       WITH user_most_review AS (
       SELECT DISTINCT u.user_id
       FROM User u
-      GROUP BY u.reviews
-      ORDER BY COUNT(u.reviews) DESC LIMIT 500
+      ORDER BY reviews DESC
+      Limit 500
       ),
       user_most_game AS(
       SELECT DISTINCT r.user_id
