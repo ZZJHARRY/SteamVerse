@@ -308,27 +308,25 @@ const recommendation = async function(req, res) {
       connection.query(`
         WITH temp1 AS(
         SELECT DISTINCT r.user_id
-        FROM Game g, Recommendations r, Operation_System o
-        WHERE g.app_id = r.app_id AND g.app_id = o.app_id AND g.date_release >= '2015-01-01'
-        GROUP BY r.user_id
-        ORDER BY COUNT(r.review_id) DESC
+        FROM Game g JOIN Recommendations r ON g.app_id = r.app_id JOIN Operation_System o ON g.app_id = o.app_id
+        WHERE g.date_release >= '2015-01-01'
+        ORDER BY r.hours DESC
         LIMIT 500
         ),
         temp2 AS(
         SELECT u.user_id
         FROM User u
-        WHERE u.reviews >= 2
-        ORDER BY u.products DESC
-        LIMIT 500
+        WHERE u.products >= 500 AND u.reviews >= 30
+        LIMIT 1000
         ),
         temp3 AS(
         SELECT DISTINCT r.app_id
         FROM Recommendations r
-        WHERE r.is_recommended = True AND r. Hours >= 100 AND ( r.user_id IN (SELECT t1.user_id FROM temp1 t1) OR r.user_id IN (SELECT t2.user_id FROM temp2 t2)  )
+        WHERE r.is_recommended = True AND r. funny >= 1 AND ( r.user_id IN (SELECT t1.user_id FROM temp1 t1) OR r.user_id IN (SELECT t2.user_id FROM temp2 t2)  )
         )
-        SELECT DISTINCT g1.app_id, g1.title
-        FROM Game g1, temp3 t3
-        WHERE g1.app_id = t3.app_id AND g1.price_final > 10 AND g1.positive_ratio >= 60;
+        SELECT DISTINCT g1.title
+        FROM Game g1 JOIN temp3 t3 ON g1.app_id = t3.app_id
+        WHERE g1.price_final > 10 AND g1.positive_ratio >= 60;
         
     `, (err, data) => {
       if (err || data.length === 0) {
