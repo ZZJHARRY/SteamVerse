@@ -9,19 +9,25 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TablePagination
 // passed into the component. Some of these props are optional (defaultPageSize, rowsPerPageOptions) while
 // others are required (routes, columns). Though not indicated by code, whether the props are optional or
 // required will affect how you handle them in the code.
-export default function LazyTable({ route, columns, defaultPageSize, rowsPerPageOptions }) {
+export default function LazyTable({ route, columns, defaultPageSize, rowsPerPageOptions , default_input_month}) {
   const [data, setData] = useState([]);
 
   const [page, setPage] = useState(1); // 1 indexed
-  const [pageSize, setPageSize] = useState(defaultPageSize ?? 10);
+  const [pageSize, setPageSize] = useState(defaultPageSize ?? 5);
+  const [input_month, setInput_month] = useState(default_input_month ?? 5);
 
   // Now notice the dependency array contains route, page, pageSize, since we
   // need to re-fetch the data if any of these values change
   useEffect(() => {
-    fetch(`${route}?page=${page}&page_size=${pageSize}`)
+    if (input_month){
+    fetch(`${route}?input_month=${default_input_month}&page=${page}&page_size=${pageSize}`)
       .then(res => res.json())
       .then(resJson => setData(resJson));
-  }, [route, page, pageSize]);
+  }else{
+    fetch(`${route}?page=${page}&page_size=${pageSize}`)
+    .then(res => res.json())
+    .then(resJson => setData(resJson));
+  }}, [route, page, pageSize]);
 
   const handleChangePage = (e, newPage) => {
     // Can always go to previous page (TablePagination prevents negative pages)

@@ -259,6 +259,9 @@ const recommendation = async function(req, res) {
   const want_to_operate = req.query.want_to_operate;
   const not_want_to_operate = req.query.not_want_to_operate;
   const input_month = req.query.input_month;
+  const page = req.query.page ?? 1;
+  const pageSize = req.query.page_size ?? 5;
+  
 
   const type_of_recommendation = req.params.type_of_recommendation;
 
@@ -348,12 +351,12 @@ const recommendation = async function(req, res) {
       WITH Games_Win AS (
         SELECT g.title, g.app_id
         FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
-        WHERE o.os_name = ${want_to_operate} and g.date_release >= '2018-01-01'
+        WHERE o.os_name = "${want_to_operate}" and g.date_release >= '2018-01-01'
      ),
      Games_Mac AS (
         SELECT g.title, g.app_id
         FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
-        WHERE o.os_name = ${not_want_to_operate} and g.date_release >= '2018-01-01'
+        WHERE o.os_name = "${not_want_to_operate}" and g.date_release >= '2018-01-01'
      ),
      Games_Win_Not_Mac AS (
         SELECT w.title, w.app_id
@@ -404,7 +407,7 @@ const recommendation = async function(req, res) {
     With cte As(
       Select app_id, positive_ratio / 200 as rate
       From Game
-      Where MONTH(date_release) = 'input month'),
+      Where MONTH(date_release) = ${input_month}),
       cte2 As(
         Select count(*) as user_cnt
         From User),
@@ -416,8 +419,8 @@ const recommendation = async function(req, res) {
       From Game g
       Join cte c on c.app_id = g.app_id
       Join cte3 cc on cc.app_id = g.app_id
-      Where MONTH(g.date_release) = 'input month'
-      Order By score DESC      
+      Where MONTH(g.date_release) = ${input_month}
+      Order By score DESC    
   `, (err, data) => {
     if (err || data.length === 0) {
       // if there is an error for some reason, or if the query is empty (this should not be possible)
@@ -465,8 +468,8 @@ const recommendation = async function(req, res) {
     WITH Top_10_Users AS (
       SELECT user_id
       FROM User
-      ORDER BY products
-      LIMIT 10
+      ORDER BY products DESC
+      LIMIT 100
    )
    SELECT g.app_id, g.title
    FROM Top_10_Users t JOIN Recommendations r ON t.user_id = r.user_id
@@ -582,8 +585,8 @@ const stat = async function(req, res){
 /*************************************
  * ROUTE 4: Filtering Games - Zijian *
  *************************************/
-// Route 4: GET /games/filtering/:type_of_games
-const filter_games = async function(req, res) {
+// Route 4: GET /games/:type_of_games
+const games = async function(req, res) {
   const type_of_games = req.params.type_of_games;
   if (type_of_games === "high_positive_ratio") {
     connection.query(`
@@ -620,6 +623,74 @@ const filter_games = async function(req, res) {
   }
 }
 
+/********************************
+ * Guo Cheng *
+ ********************************/
+// Route 5: GET /app/:app_id
+const game = async function(req, res) {
+  //  given a app_id, returns all information about the app
+  const app_id = req.params.app_id;
+  connection.query(`
+      SELECT title,date_release,rating,positive_ratio,user_reviews,price_final,price_original,discount
+      FROM Game
+      WHERE app_id = "${app_id}"
+      `, (err, data) => {
+    if (err || data.length === 0) {
+      console.log(err);
+      res.json({});
+    } else {
+      res.json(data[0]);
+    }
+  });
+}
+
+
+
+// // Route 6: GET /search_filter
+// const search_filter = async function(req, res) {
+//   // TODO (TASK 12): return all songs that match the given search query with parameters defaulted to those specified in API spec ordered by title (ascending)
+//   // Some default parameters have been provided for you, but you will need to fill in the rest
+//   const title = req.query.title ?? '';
+//   const date_release_low = req.query.date_release_low ?? "2010-01-01";
+//   const date_release_high = req.query.date_release_high ?? "2022-01-01";
+//   const rating = req.query.rating ?? '';
+//   const positive_ratio_low = req.query.positive_ratio_low ?? 70;
+//   const positive_ratio_high = req.query.positive_ratio_high ?? 100;
+//   const user_reviews_low = req.query.user_reviews_low ?? 100;
+//   const user_reviews_high = req.query.user_reviews_high ?? 10000;
+//   const price_final_low = req.query.price_final_low ?? 0;
+//   const price_final_high = req.query.price_final_high ?? 100;
+//   const price_original_low = req.query.price_original_low ?? 0;
+//   const price_original_high = req.query.price_original_high ?? 100;
+//   const discount_low = req.query.discount_low ?? 0;
+//   const discount_high = req.query.discount_high ?? 100;
+  
+//   //TODO include rating
+
+//   connection.query(`
+//     SELECT *
+//     FROM Game
+//     WHERE LOWER(title) LIKE LOWER('%${title}%')
+//     AND ${date_release_low} <= date_release AND date_release <= ${date_release_high}
+//     AND ${positive_ratio_low} <= positive_ratio AND positive_ratio <= ${positive_ratio_high}
+//     AND ${user_reviews_low} <= user_reviews AND user_reviews<=${user_reviews_high}
+//     AND ${price_final_low} <= price_final AND price_final <= ${price_final_high}
+//     AND ${price_original_low} <= price_original AND price_original <= ${price_original_high}
+//     AND ${discount_low} <= discount AND discount <= ${discount_high}
+//     ORDER BY title ASC
+//   `,(err, data)=>{
+//     if (err || data.length ===0){
+//       console.log(err)
+//       res.json([]);
+//     } else {
+//       res.json(data);
+//     } 
+//   });
+
+// }
+
+
+
 module.exports = {
   author,
   random,
@@ -631,7 +702,9 @@ module.exports = {
   top_albums,
   search_songs,
   recommendation,
-  filter_games,
   game_system,
   stat,
+  games,
+  game,
+  // search_filter,
 }
