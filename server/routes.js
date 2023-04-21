@@ -534,7 +534,7 @@ Top_10_Reviewers_Recommend_Games_Number AS (
    GROUP BY app_id
    HAVING COUNT(*) >= 2
 )
-SELECT title
+SELECT app_id,title
 FROM Games_final
 WHERE app_id IN (
    SELECT *
