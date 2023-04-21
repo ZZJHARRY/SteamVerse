@@ -70,7 +70,7 @@ export default function HomePage() {
 
 
 
-      <p>authors:</p>
+      <p>Authors: Guo Cheng, Zijian Zhang, Jun Wang, Tangchao Chen</p>
       
     </Container>
   );
