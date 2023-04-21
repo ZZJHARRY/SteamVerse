@@ -450,7 +450,7 @@ const recommendation = async function(req, res) {
     FROM Top_10_Reviewers t JOIN Recommendations r ON t.user_id = r.user_id
     WHERE r.is_recommended = 'true'
     )
-    SELECT distinct g.title
+    SELECT distinct g.app_id, g.title
     FROM Games_Win_Not_Mac g
     Join Top_10_Reviewers_Recommend_Games t on t.app_id=g.app_id
      ;
@@ -494,7 +494,7 @@ const recommendation = async function(req, res) {
     FROM Top_10_Reviewers t JOIN Recommendations r ON t.user_id = r.user_id
     WHERE r.is_recommended = 'true'
     )
-    SELECT distinct g.title
+    SELECT distinct g.app_id, g.title
     FROM Games_Win_Not_Mac g
     Join Top_10_Reviewers_Recommend_Games t on t.app_id=g.app_id
     LIMIT ${pageSize}
