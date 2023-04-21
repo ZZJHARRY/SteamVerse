@@ -708,7 +708,11 @@ LIMIT 5;
 *************************************/
 const stat = async function(req, res){
   const statistics = req.params.statistics;
-  if (statistics){
+  const page = req.query.page;
+  const pageSize = req.query.page_size ?? 10;
+
+  
+    if (!page){ //return all albums
   connection.query(`With cte As(
       Select g.app_id, Floor(AVG(r.hours)) as average_hours
       From Recommendations r
@@ -717,7 +721,7 @@ const stat = async function(req, res){
       Where g.rating = 'Very Positive' And o.os_name = 'win'
       Group By g.app_id
       )
-      Select g.title, c.average_hours
+      Select g.app_id, g.title, c.average_hours
       From Game g
       Join cte c on c.app_id = g.app_id
       Order by average_hours DESC;
@@ -727,11 +731,37 @@ const stat = async function(req, res){
           res.json({});
       } 
       else{
-          res.json(data)
+          res.json(data);
       }
       }
-      )
-  }
+      );}else{
+        const off_set = pageSize*(page-1)
+        connection.query(`With cte As(
+          Select g.app_id, Floor(AVG(r.hours)) as average_hours
+          From Recommendations r
+          Join Game g on g.app_id = r.app_id
+          Join Operation_System o on o.app_id = g.app_id
+          Where g.rating = 'Very Positive' And o.os_name = 'win'
+          Group By g.app_id
+          )
+          Select g.app_id, g.title, c.average_hours
+          From Game g
+          Join cte c on c.app_id = g.app_id
+          Order by average_hours DESC
+          LIMIT ${pageSize}
+          OFFSET ${off_set};
+          `, (err, data) =>{
+          if (err || data.length === 0) {
+              console.log(err);
+              res.json({});
+          } 
+          else{
+              res.json(data);
+          }
+          }
+          );
+      }
+  
 }
 
 
@@ -832,10 +862,53 @@ const game = async function(req, res) {
   });
 }
 
+// Route 6: GET /search_filter
+const search_filter = async function(req, res) {
+  // TODO (TASK 12): return all songs that match the given search query with parameters defaulted to those specified in API spec ordered by title (ascending)
+  // Some default parameters have been provided for you, but you will need to fill in the rest
+  const title = req.query.title ?? '';
+  const date_release_low = req.query.date_release_low ?? "2010-01-01";
+  const date_release_high = req.query.date_release_high ?? "2022-01-01";
+  const rating = req.query.rating ?? '';
+  const positive_ratio_low = req.query.positive_ratio_low ?? 70;
+  const positive_ratio_high = req.query.positive_ratio_high ?? 100;
+  const user_reviews_low = req.query.user_reviews_low ?? 100;
+  const user_reviews_high = req.query.user_reviews_high ?? 10000;
+  const price_final_low = req.query.price_final_low ?? 0;
+  const price_final_high = req.query.price_final_high ?? 100;
+  const price_original_low = req.query.price_original_low ?? 0;
+  const price_original_high = req.query.price_original_high ?? 100;
+  const discount_low = req.query.discount_low ?? 0;
+  const discount_high = req.query.discount_high ?? 100;
+  
+  //TODO include rating
+
+  connection.query(`
+    SELECT *
+    FROM Game
+    WHERE LOWER(title) LIKE LOWER('%${title}%')
+    AND ${date_release_low} <= date_release AND date_release <= ${date_release_high}
+    AND ${positive_ratio_low} <= positive_ratio AND positive_ratio <= ${positive_ratio_high}
+    AND ${user_reviews_low} <= user_reviews AND user_reviews<=${user_reviews_high}
+    AND ${price_final_low} <= price_final AND price_final <= ${price_final_high}
+    AND ${price_original_low} <= price_original AND price_original <= ${price_original_high}
+    AND ${discount_low} <= discount AND discount <= ${discount_high}
+    ORDER BY title ASC
+  `,(err, data)=>{
+    if (err || data.length ===0){
+      console.log(err)
+      res.json([]);
+    } else {
+      res.json(data);
+    } 
+  });
+
+}
+
 /********************************
  * Zijian Zhang *
  ********************************/
-// Route 6: GET /system/:app_id
+// Route 7: GET /system/:app_id
 const system = async function(req, res) {
   //  given a app_id, returns all information about the app
   const app_id = req.params.app_id;
@@ -855,48 +928,7 @@ const system = async function(req, res) {
 
 
 
-// // Route 6: GET /search_filter
-// const search_filter = async function(req, res) {
-//   // TODO (TASK 12): return all songs that match the given search query with parameters defaulted to those specified in API spec ordered by title (ascending)
-//   // Some default parameters have been provided for you, but you will need to fill in the rest
-//   const title = req.query.title ?? '';
-//   const date_release_low = req.query.date_release_low ?? "2010-01-01";
-//   const date_release_high = req.query.date_release_high ?? "2022-01-01";
-//   const rating = req.query.rating ?? '';
-//   const positive_ratio_low = req.query.positive_ratio_low ?? 70;
-//   const positive_ratio_high = req.query.positive_ratio_high ?? 100;
-//   const user_reviews_low = req.query.user_reviews_low ?? 100;
-//   const user_reviews_high = req.query.user_reviews_high ?? 10000;
-//   const price_final_low = req.query.price_final_low ?? 0;
-//   const price_final_high = req.query.price_final_high ?? 100;
-//   const price_original_low = req.query.price_original_low ?? 0;
-//   const price_original_high = req.query.price_original_high ?? 100;
-//   const discount_low = req.query.discount_low ?? 0;
-//   const discount_high = req.query.discount_high ?? 100;
-  
-//   //TODO include rating
 
-//   connection.query(`
-//     SELECT *
-//     FROM Game
-//     WHERE LOWER(title) LIKE LOWER('%${title}%')
-//     AND ${date_release_low} <= date_release AND date_release <= ${date_release_high}
-//     AND ${positive_ratio_low} <= positive_ratio AND positive_ratio <= ${positive_ratio_high}
-//     AND ${user_reviews_low} <= user_reviews AND user_reviews<=${user_reviews_high}
-//     AND ${price_final_low} <= price_final AND price_final <= ${price_final_high}
-//     AND ${price_original_low} <= price_original AND price_original <= ${price_original_high}
-//     AND ${discount_low} <= discount AND discount <= ${discount_high}
-//     ORDER BY title ASC
-//   `,(err, data)=>{
-//     if (err || data.length ===0){
-//       console.log(err)
-//       res.json([]);
-//     } else {
-//       res.json(data);
-//     } 
-//   });
-
-// }
 
 
 
@@ -916,5 +948,5 @@ module.exports = {
   games,
   game,
   system,
-  // search_filter,
+  search_filter,
 }
