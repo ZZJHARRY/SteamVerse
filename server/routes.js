@@ -257,7 +257,7 @@ const search_songs = async function(req, res) {
 const recommendation = async function(req, res) {
 
   const want_to_operate = req.query.want_to_operate;
-  const not_want_to_operate = req.query.not_want_to_operate;
+  const do_not_want_to_operate = req.query.do_not_want_to_operate;
   const input_month = req.query.input_month;
   const page = req.query.page ?? 1;
   const pageSize = req.query.page_size ?? 5;
@@ -324,8 +324,8 @@ const recommendation = async function(req, res) {
       )
       SELECT DISTINCT g1.app_id, g1.title
       FROM Game g1 JOIN game_in_id g2 ON g1.app_id = g2.app_id
+      LIMIT ${pageSize}
       OFFSET ${off_set}
-      LIMIT ${pageSize};
   `, (err, data) => {
     if (err || data.length === 0) {
       // if there is an error for some reason, or if the query is empty (this should not be possible)
@@ -404,9 +404,8 @@ const recommendation = async function(req, res) {
         SELECT DISTINCT g1.title
         FROM Game g1 JOIN temp3 t3 ON g1.app_id = t3.app_id
         WHERE g1.price_final > 10 AND g1.positive_ratio >= 60
-        OFFSET ${off_set}
-        LIMIT ${pageSize};
-        
+        LIMIT ${pageSize}
+        OFFSET ${off_set}    
     `, (err, data) => {
       if (err || data.length === 0) {
         // if there is an error for some reason, or if the query is empty (this should not be possible)
@@ -498,8 +497,8 @@ const recommendation = async function(req, res) {
     SELECT distinct g.title
     FROM Games_Win_Not_Mac g
     Join Top_10_Reviewers_Recommend_Games t on t.app_id=g.app_id
+    LIMIT ${pageSize}
     OFFSET ${off_set}
-    LIMIT ${pageSize};
     `, (err, data) => {
       if (err || data.length === 0) {
         // if there is an error for some reason, or if the query is empty (this should not be possible)
@@ -568,9 +567,9 @@ const recommendation = async function(req, res) {
       Join cte c on c.app_id = g.app_id
       Join cte3 cc on cc.app_id = g.app_id
       Where MONTH(g.date_release) = ${input_month}
-      Order By score DESC   
-      OFFSET ${off_set}
+      Order By score DESC  
       LIMIT ${pageSize} 
+      OFFSET ${off_set} 
   `, (err, data) => {
     if (err || data.length === 0) {
       // if there is an error for some reason, or if the query is empty (this should not be possible)
@@ -653,10 +652,8 @@ const recommendation = async function(req, res) {
    FROM Top_10_Users t JOIN Recommendations r ON t.user_id = r.user_id
    JOIN Game g ON r.app_id = g.app_id
    WHERE r.is_recommended = 'true'
-   OFFSET ${off_set}
-  LIMIT ${pageSize};
-   
-          
+   LIMIT ${pageSize}
+   OFFSET ${off_set}      
   `, (err, data) => {
     if (err || data.length === 0) {
       // if there is an error for some reason, or if the query is empty (this should not be possible)
