@@ -257,7 +257,7 @@ const search_songs = async function(req, res) {
 const recommendation = async function(req, res) {
 
   const want_to_operate = req.query.want_to_operate;
-  const not_want_to_operate = req.query.not_want_to_operate;
+  const do_not_want_to_operate = req.query.do_not_want_to_operate;
   const input_month = req.query.input_month;
   const page = req.query.page ?? 1;
   const pageSize = req.query.page_size ?? 5;
