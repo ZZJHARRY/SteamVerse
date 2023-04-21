@@ -505,12 +505,12 @@ const game_system = async function(req, res) {
    WITH Games_Win AS (
         SELECT g.title, g.app_id
         FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
-        WHERE o.os_name = "win" and g.date_release >= '2018-01-01'
+        WHERE o.os_name = "${want_to_operate}" and g.date_release >= '2018-01-01'
      ),
      Games_Mac AS (
         SELECT g.title, g.app_id
         FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
-        WHERE o.os_name = "mac" and g.date_release >= '2018-01-01'
+        WHERE o.os_name = "${do_not_want_to_operate}" and g.date_release >= '2018-01-01'
      ),
      Games_Win_Not_Mac AS (
         SELECT w.title, w.app_id
@@ -520,19 +520,17 @@ const game_system = async function(req, res) {
      Top_10_Reviewers AS (
         SELECT user_id
         FROM User
-        WHERE reviews >= 10
-        LIMIT 2000
+        Order by reviews DESC
+        LIMIT 100
      ),
     Top_10_Reviewers_Recommend_Games AS (SELECT r.app_id
     FROM Top_10_Reviewers t JOIN Recommendations r ON t.user_id = r.user_id
     WHERE r.is_recommended = 'true'
     )
-    SELECT title
-     FROM Games_Win_Not_Mac
-     WHERE app_id IN (
-        SELECT *
-        FROM Top_10_Reviewers_Recommend_Games
-     );
+    SELECT distinct g.title
+    FROM Games_Win_Not_Mac g
+    Join Top_10_Reviewers_Recommend_Games t on t.app_id=g.app_id
+     ;
   `, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
