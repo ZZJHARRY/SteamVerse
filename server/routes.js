@@ -489,37 +489,21 @@ const recommendation = async function(req, res) {
 //Route 2: /games/system/:type_of_system
 const game_system = async function(req, res) {
   const want_to_operate = req.params.want_to_operate;
-  const do_not_want_to_operate = req.params.do_not_want_to_operate;
   connection.query(` 
-   WITH Games_Win AS (
-        SELECT g.title, g.app_id
-        FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
-        WHERE o.os_name = "${want_to_operate}" and g.date_release >= '2018-01-01'
-     ),
-     Games_Mac AS (
-        SELECT g.title, g.app_id
-        FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
-        WHERE o.os_name = "${do_not_want_to_operate}" and g.date_release >= '2018-01-01'
-     ),
-     Games_Win_Not_Mac AS (
-        SELECT w.title, w.app_id
-        FROM Games_Win w LEFT JOIN Games_Mac m ON w.app_id = m.app_id
-        WHERE m.app_id IS NULL
-     ),
-     Top_10_Reviewers AS (
-        SELECT user_id
-        FROM User
-        Order by reviews DESC
-        LIMIT 100
-     ),
-    Top_10_Reviewers_Recommend_Games AS (SELECT r.app_id
-    FROM Top_10_Reviewers t JOIN Recommendations r ON t.user_id = r.user_id
-    WHERE r.is_recommended = 'true'
-    )
-    SELECT distinct g.title
-    FROM Games_Win_Not_Mac g
-    Join Top_10_Reviewers_Recommend_Games t on t.app_id=g.app_id
-     ;
+   WITH Games_Operate_on_Mac AS (
+   SELECT g.title, g.app_id
+   FROM Game g JOIN Operation_System o ON g.app_id = o.app_id
+   WHERE o.os_name = "${want_to_operate}" and g.date_release >= '2020-01-01'
+),
+Games_Number_Reviews AS (
+   SELECT g.title, g.app_id, COUNT(*) AS num_reviews
+   FROM Games_Operate_on_Mac g JOIN Recommendations r ON g.app_id = r.app_id
+   GROUP BY g.title, g.app_id
+)
+SELECT title, num_reviews
+FROM Games_Number_Reviews
+ORDER BY num_reviews DESC
+LIMIT 5;
   `, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
