@@ -577,8 +577,31 @@ const stat = async function(req, res){
 // Route 4: GET /games/:type_of_games
 const games = async function(req, res) {
   const type_of_games = req.params.type_of_games;
+  const page = req.query.page;
+  const pageSize = req.query.page_size ?? 10;
+
   if (type_of_games === "high_positive_ratio") {
-    connection.query(`
+    if (!page){ //return all albums
+      connection.query(`
+        With cte AS (
+          SELECT MAX(positive_ratio) AS max_ratio
+          From Game
+          WHERE date_release >= '2020-01-01')
+        SELECT app_id, title
+        FROM Game
+        WHERE date_release < '2020-01-01'
+        AND positive_ratio >= (SELECT max_ratio FROM cte)
+        `,(err,data)=>{
+          if (err || data.length === 0){
+            console.log(err)
+            res.json([]);
+          } else {
+            res.json(data);
+          }
+      });
+    } else {// return albums on a certain page
+      const off_set = pageSize*(page-1)
+      connection.query(`
       With cte AS (
         SELECT MAX(positive_ratio) AS max_ratio
         From Game
@@ -587,16 +610,15 @@ const games = async function(req, res) {
       FROM Game
       WHERE date_release < '2020-01-01'
       AND positive_ratio >= (SELECT max_ratio FROM cte)
-      `,(err,data)=>{
-        if (err || data.length === 0){
-          console.log(err)
-          res.json([]);
-        } else {
-          res.json(data);
-        }
-    });
+      LIMIT ${pageSize}
+      OFFSET ${off_set}
+      `,(err, data)=>{
+        res.json(data);
+      });
+    }
   } else if (type_of_games === "games_ratio") {
-    connection.query(`
+    if (!page){ //return all albums
+      connection.query(`
       SELECT app_id, title
       FROM Game
       WHERE positive_ratio > 80 AND user_reviews > 20
@@ -608,7 +630,20 @@ const games = async function(req, res) {
         } else {
           res.json(data);
         }
-    });
+      });
+    } else {// return albums on a certain page
+      const off_set = pageSize*(page-1)
+      connection.query(`
+      SELECT app_id, title
+      FROM Game
+      WHERE positive_ratio > 80 AND user_reviews > 20
+      ORDER BY price_final
+      LIMIT ${pageSize}
+      OFFSET ${off_set}
+      `,(err, data)=>{
+        res.json(data);
+      });
+    }
   }
 }
 
