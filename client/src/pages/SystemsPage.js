@@ -32,6 +32,18 @@ export default function SystemsPage() {
     },
   ];
 
+  // const appHourColumns = [
+  //   {
+  //     field: 'title',
+  //     headerName: 'Game Title',
+  //     renderCell: (row) => <Link onClick={() => setSelectedAppId(row.app_id)}>{row.title}</Link> // A Link component is used just for formatting purposes
+  //   },
+  //   {
+  //     field: 'average_hours',
+  //     headerName: 'Game Title',
+  //   },
+  // ];
+
 
 
   return (
@@ -46,21 +58,25 @@ export default function SystemsPage() {
       <Divider />
       <h2>MAC</h2>
       <p>have the top 5 number of user reviews on or after 2020</p>
-      <LazyTable route={`http://${config.server_host}:${config.server_port}/system/mac`} columns={appColumns} />
+      <LazyTable route={`http://${config.server_host}:${config.server_port}/system/system_type/mac`} columns={appColumns} />
       <Divider />
 
       <Divider />
       <h2>WINDOWS</h2>
-      <LazyTable route={`http://${config.server_host}:${config.server_port}/system/win`} columns={appColumns} />
+      <LazyTable route={`http://${config.server_host}:${config.server_port}/system/system_type/win`} columns={appColumns} />
       <Divider />
 
 
       <Divider />
       <h2>LINUX</h2>
-      <LazyTable route={`http://${config.server_host}:${config.server_port}/system/linux`} columns={appColumns} />
+      <LazyTable route={`http://${config.server_host}:${config.server_port}/system/system_type/linux`} columns={appColumns} />
       <Divider />
 
-
+      {/* <Divider />
+      <h2>Stat</h2>
+      <p>average number of hours played for all “Very Positive” rating  games.</p>
+      <LazyTable route={`http://${config.server_host}:${config.server_port}/system/statistics`} columns={appHourColumns} />
+      <Divider /> */}
       
 
 
