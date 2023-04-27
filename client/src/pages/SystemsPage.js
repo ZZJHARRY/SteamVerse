@@ -31,6 +31,7 @@ export default function SystemsPage() {
       renderCell: (row) => <Link onClick={() => setSelectedAppId(row.app_id)}>{row.title}</Link> // A Link component is used just for formatting purposes
     },
   ];
+  
 
   // const appHourColumns = [
   //   {
@@ -84,4 +85,4 @@ export default function SystemsPage() {
       
     </Container>
   );
-};
+}
