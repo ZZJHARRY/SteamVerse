@@ -2,8 +2,6 @@ import { useEffect, useState } from 'react';
 import { Container, Divider, Link } from '@mui/material';
 import { NavLink } from 'react-router-dom';
 
-
-
 import LazyTable from '../components/LazyTable';
 import AppCard from '../components/AppCard';
 const config = require('../config.json');
@@ -26,17 +24,27 @@ export default function RecommendationPage() {
   // and an optional renderCell property which given a row returns a custom JSX element to display in the cell.
   const appColumns = [
     {
+      field: 'app_id',
+      headerName: 'Game Id',
+      // renderCell: (row) => <Link onClick={() => setSelectedAppId(row.app_id)}>{row.app_id}</Link> // A Link component is used just for formatting purposes
+      renderCell: (row) => row.app_id
+    },
+    {
       field: 'title',
       headerName: 'Game Title',
       renderCell: (row) => <Link onClick={() => setSelectedAppId(row.app_id)}>{row.title}</Link> // A Link component is used just for formatting purposes
     },
+    {
+      field: 'rating',
+      headerName: 'Rating',
+      // renderCell: (row) => < onClick={() => setSelectedAppId(row.app_id)}>{row.app_id}</Link> // A Link component is used just for formatting purposes
+      renderCell: (row) => row.rating
+    },
   ];
-
-
 
   return (
     <Container>
-      <h1>Games
+      <h1>Games Ranking
       </h1>
       <Divider />
       {/* AppCard is a custom component that we made. selectedSongId && <SongCard .../> makes use of short-circuit logic to only render the SongCard if a non-null song is selected */}
@@ -44,20 +52,17 @@ export default function RecommendationPage() {
       
 
       <Divider />
-      <h2>high_positive_ratio</h2>
+      <h2>Ranking by High Positive Ratio</h2>
       <LazyTable route={`http://${config.server_host}:${config.server_port}/games/high_positive_ratio`} columns={appColumns} />
       <Divider />
 
       <Divider />
-      <h2>games_ratio</h2>
+      {/* TODO: Update the algorithm */}
+      <h2>Ranking by Other Ratio</h2>
       <LazyTable route={`http://${config.server_host}:${config.server_port}/games/games_ratio`} columns={appColumns} />
       <Divider />
 
-
-      
-
-
-      <p>authors:</p>
+      <p>Authors: Guo Cheng, Zijian Zhang, Jun Wang, Tangchao Chen</p>
       
     </Container>
   );
