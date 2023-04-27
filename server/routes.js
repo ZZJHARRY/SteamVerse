@@ -991,4 +991,5 @@ module.exports = {
   game,
   system,
   search_filter,
+  users,
 }
