@@ -55,10 +55,10 @@ export default function SystemsPage() {
       {/* AppCard is a custom component that we made. selectedSongId && <SongCard .../> makes use of short-circuit logic to only render the SongCard if a non-null song is selected */}
       {selectedAppId && <AppCard appId={selectedAppId} handleClose={() => setSelectedAppId(null)} />}
       
-
+      <p>Games that have the top 5 number of user reviews on or after 2020 available on each system.</p>
       <Divider />
       <h2>MAC</h2>
-      <p>have the top 5 number of user reviews on or after 2020</p>
+      
       <LazyTable route={`http://${config.server_host}:${config.server_port}/system/system_type/mac`} columns={appColumns} />
       <Divider />
 
