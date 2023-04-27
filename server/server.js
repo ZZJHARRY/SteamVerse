@@ -30,7 +30,7 @@ app.get('/system/:app_id', routes.system);
 app.get('/users/:type_of_user', routes.system);
 
 
-app.get('/filtering',routes.search_filter);
+app.get('/search_filter',routes.search_filter);
 
 
 
