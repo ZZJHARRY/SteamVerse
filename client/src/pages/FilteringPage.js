@@ -14,7 +14,7 @@ export default function FilteringPage() {
   const [title, setTitle] = useState('');
 
   const [date_release, set_date_release] = useState(["2010-01-01", "2022-01-01"]);
-  const [rating, set_rating] = useState(["Very Negative", "Very Positive"]);
+  const [rating, set_rating] = useState([1, 5]);
   const [positive_ratio, set_positive_ratio] = useState([0, 100]);
   const [user_reviews, set_user_reviews] = useState([0, 7000000]);
   const [price_final, set_price_final] = useState([0, 59.99]);
@@ -32,8 +32,16 @@ export default function FilteringPage() {
   }, []);
 
   const search = () => {
-    fetch(`http://${config.server_host}:${config.server_port}/filtering?title=${title}` +
-      `&date_release_low=${date_release[0]}&date_release_high=${date_release[1]}` +
+    // fetch(`http://${config.server_host}:${config.server_port}/search_filter?title=${title}` +
+    //   `&date_release_low=${date_release[0]}&date_release_high=${date_release[1]}` +
+    //   `&positive_ratio_low=${positive_ratio[0]}&positive_ratio_high=${positive_ratio[1]}` +
+    //   `&user_reviews_low=${user_reviews[0]}&user_reviews_high=${user_reviews[1]}` +
+    //   `&price_final_low=${price_final[0]}&price_final_high=${price_final[1]}` +
+    //   `&price_original_low=${price_original[0]}&price_original_high=${price_original[1]}` +
+    //   `&discount_low=${discount[0]}&discount_high=${discount[1]}`
+    // )
+    fetch(`http://${config.server_host}:${config.server_port}/search_filter?title=${title}` +
+      `&rating_low=${rating[0]}&rating_high=${rating[1]}` +
       `&positive_ratio_low=${positive_ratio[0]}&positive_ratio_high=${positive_ratio[1]}` +
       `&user_reviews_low=${user_reviews[0]}&user_reviews_high=${user_reviews[1]}` +
       `&price_final_low=${price_final[0]}&price_final_high=${price_final[1]}` +
@@ -102,11 +110,23 @@ export default function FilteringPage() {
               not really here because previously we need better interprebaility or readability so we convert duration to time and we convert unit to make number
               shorter. Since the following are all from 0 to 1 there isn't such need*/}
         <Grid item xs={4}>
+          <p>rating</p>
+          <Slider
+            value={rating}
+            min={1}
+            max={5}
+            step={1}
+            onChange={(e, newValue) => set_rating(newValue)}
+            valueLabelDisplay='auto'
+            // valueLabelFormat={value => <div>{value}</div>}
+          />
+        </Grid>
+        <Grid item xs={4}>
           <p>positive_ratio</p>
           <Slider
             value={positive_ratio}
             min={0}
-            max={1}
+            max={100}
             step={0.1}
             onChange={(e, newValue) => set_positive_ratio(newValue)}
             valueLabelDisplay='auto'
@@ -118,8 +138,8 @@ export default function FilteringPage() {
           <Slider
             value={user_reviews}
             min={0}
-            max={1}
-            step={0.1}
+            max={7000000}
+            step={1000}
             onChange={(e, newValue) => set_user_reviews(newValue)}
             valueLabelDisplay='auto'
             valueLabelFormat={value => <div>{value}</div>}
@@ -130,7 +150,7 @@ export default function FilteringPage() {
           <Slider
             value={price_final}
             min={0}
-            max={1}
+            max={59.9}
             step={0.1}
             onChange={(e, newValue) => set_price_final(newValue)}
             valueLabelDisplay='auto'
@@ -142,7 +162,7 @@ export default function FilteringPage() {
           <Slider
             value={price_original}
             min={0}
-            max={1}
+            max={59.9}
             step={0.1}
             onChange={(e, newValue) => set_price_original(newValue)}
             valueLabelDisplay='auto'
@@ -154,7 +174,7 @@ export default function FilteringPage() {
           <Slider
             value={discount}
             min={0}
-            max={1}
+            max={100}
             step={0.1}
             onChange={(e, newValue) => set_discount(newValue)}
             valueLabelDisplay='auto'
