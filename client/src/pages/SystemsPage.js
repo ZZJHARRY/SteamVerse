@@ -31,7 +31,19 @@ export default function SystemsPage() {
       renderCell: (row) => <Link onClick={() => setSelectedAppId(row.app_id)}>{row.title}</Link> // A Link component is used just for formatting purposes
     },
   ];
+  
 
+  const appHourColumns = [
+    {
+      field: 'title',
+      headerName: 'Game Title',
+      renderCell: (row) => <Link onClick={() => setSelectedAppId(row.app_id)}>{row.title}</Link> // A Link component is used just for formatting purposes
+    },
+    {
+      field: 'average_hours',
+      headerName: 'Game Title',
+    },
+  ];
 
 
   return (
@@ -61,6 +73,13 @@ export default function SystemsPage() {
       <Divider />
 
 
+      <Divider />
+      <h2>Stat</h2>
+      <p>average number of hours played for all “Very Positive” rating  games.</p>
+      <LazyTable route={`http://${config.server_host}:${config.server_port}/system/statistics`} columns={appHourColumns} />
+      <Divider />
+
+
       
 
 
@@ -68,4 +87,4 @@ export default function SystemsPage() {
       
     </Container>
   );
-};
+}

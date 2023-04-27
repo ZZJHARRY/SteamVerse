@@ -32,7 +32,7 @@ export default function FilteringPage() {
   }, []);
 
   const search = () => {
-    fetch(`http://${config.server_host}:${config.server_port}/search_songs?title=${title}` +
+    fetch(`http://${config.server_host}:${config.server_port}/search_filter?title=${title}` +
       `&date_release_low=${date_release[0]}&date_release_high=${date_release[1]}` +
       `&positive_ratio_low=${positive_ratio[0]}&positive_ratio_high=${positive_ratio[1]}` +
       `&user_reviews_low=${user_reviews[0]}&user_reviews_high=${user_reviews[1]}` +

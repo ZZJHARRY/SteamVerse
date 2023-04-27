@@ -39,7 +39,7 @@ export default function NavBar() {
           <NavText href='/' text='STEAMIFY' isMain />
           <NavText href='/recommendation' text='RECOMMENDATIONS' />
           <NavText href='/games' text='GAMES' />
-          <NavText href='/systems' text='SYSTEMS' />
+          <NavText href='/system' text='SYSTEMS' />
           <NavText href='/users' text='USERS' />
           <NavText href='/filtering' text='FILTER' />
         </Toolbar>

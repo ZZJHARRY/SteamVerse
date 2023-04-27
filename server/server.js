@@ -28,7 +28,7 @@ app.get('/system/:type_of_system', routes.game_system);
 app.get('/system/:app_id', routes.system);
 app.get('/system/stat', routes.stat);
 
-// app.get('/filtering',routes.search_filter);
+app.get('/filtering',routes.search_filter);
 
 
 
