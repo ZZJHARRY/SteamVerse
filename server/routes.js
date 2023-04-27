@@ -867,17 +867,18 @@ const search_filter = async function(req, res) {
   // TODO (TASK 12): return all songs that match the given search query with parameters defaulted to those specified in API spec ordered by title (ascending)
   // Some default parameters have been provided for you, but you will need to fill in the rest
   const title = req.query.title ?? '';
-  const date_release_low = req.query.date_release_low ?? "2010-01-01";
-  const date_release_high = req.query.date_release_high ?? "2022-01-01";
-  const rating = req.query.rating ?? '';
-  const positive_ratio_low = req.query.positive_ratio_low ?? 70;
+  // const date_release_low = req.query.date_release_low ?? "2010-01-01";
+  // const date_release_high = req.query.date_release_high ?? "2022-01-01";
+  const rating_low = req.query.rating_low ?? 1;
+  const rating_high = req.query.rating_high ?? 5;
+  const positive_ratio_low = req.query.positive_ratio_low ?? 0;
   const positive_ratio_high = req.query.positive_ratio_high ?? 100;
-  const user_reviews_low = req.query.user_reviews_low ?? 100;
-  const user_reviews_high = req.query.user_reviews_high ?? 10000;
+  const user_reviews_low = req.query.user_reviews_low ?? 0;
+  const user_reviews_high = req.query.user_reviews_high ?? 7000000;
   const price_final_low = req.query.price_final_low ?? 0;
-  const price_final_high = req.query.price_final_high ?? 100;
+  const price_final_high = req.query.price_final_high ?? 59.9;
   const price_original_low = req.query.price_original_low ?? 0;
-  const price_original_high = req.query.price_original_high ?? 100;
+  const price_original_high = req.query.price_original_high ?? 59.9;
   const discount_low = req.query.discount_low ?? 0;
   const discount_high = req.query.discount_high ?? 100;
   
@@ -887,7 +888,7 @@ const search_filter = async function(req, res) {
     SELECT *
     FROM Game
     WHERE LOWER(title) LIKE LOWER('%${title}%')
-    AND ${date_release_low} <= date_release AND date_release <= ${date_release_high}
+    AND ${rating_low} <= rating_number AND rating_number <= ${rating_high}
     AND ${positive_ratio_low} <= positive_ratio AND positive_ratio <= ${positive_ratio_high}
     AND ${user_reviews_low} <= user_reviews AND user_reviews<=${user_reviews_high}
     AND ${price_final_low} <= price_final AND price_final <= ${price_final_high}
@@ -896,7 +897,7 @@ const search_filter = async function(req, res) {
     ORDER BY title ASC
   `,(err, data)=>{
     if (err || data.length ===0){
-      console.log(err)
+      console.log(data);
       res.json([]);
     } else {
       res.json(data);
@@ -916,26 +917,6 @@ const system = async function(req, res) {
       SELECT os_name
       FROM Operation_System
       WHERE app_id = "${app_id}"
-      `, (err, data) => {
-    if (err || data.length === 0) {
-      console.log(err);
-      res.json({});
-    } else {
-      res.json(data);
-    }
-  });
-}
-
-// Route 8: GET /users/:type_of_user
-const users = async function(req, res) {
-  //  given a app_id, returns all information about the user
-  //if type_of_user = 
-  const type_of_user = req.params.type_of_user;
-  connection.query(`
-      SELECT *
-      FROM Users
-      ORDER BY ${type_of_user} DESC
-      LIMIT 10
       `, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
@@ -969,5 +950,4 @@ module.exports = {
   game,
   system,
   search_filter,
-  users,
 }
