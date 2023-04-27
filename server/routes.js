@@ -728,7 +728,7 @@ const stat = async function(req, res){
       `, (err, data) =>{
       if (err || data.length === 0) {
           console.log(err);
-          res.json({});
+          res.json([]);
       } 
       else{
           res.json(data);
@@ -753,7 +753,7 @@ const stat = async function(req, res){
           `, (err, data) =>{
           if (err || data.length === 0) {
               console.log(err);
-              res.json({});
+              res.json([]);
           } 
           else{
               res.json(data);
@@ -781,7 +781,7 @@ const games = async function(req, res) {
           SELECT MAX(positive_ratio) AS max_ratio
           From Game
           WHERE date_release >= '2020-01-01')
-        SELECT app_id, title
+        SELECT *
         FROM Game
         WHERE date_release < '2020-01-01'
         AND positive_ratio >= (SELECT max_ratio FROM cte)
@@ -800,7 +800,7 @@ const games = async function(req, res) {
         SELECT MAX(positive_ratio) AS max_ratio
         From Game
         WHERE date_release >= '2020-01-01')
-      SELECT app_id, title
+      SELECT *
       FROM Game
       WHERE date_release < '2020-01-01'
       AND positive_ratio >= (SELECT max_ratio FROM cte)
@@ -813,7 +813,7 @@ const games = async function(req, res) {
   } else if (type_of_games === "games_ratio") {
     if (!page){ //return all albums
       connection.query(`
-      SELECT app_id, title
+      SELECT *
       FROM Game
       WHERE positive_ratio > 80 AND user_reviews > 20
       ORDER BY price_final
@@ -828,7 +828,7 @@ const games = async function(req, res) {
     } else {// return albums on a certain page
       const off_set = pageSize*(page-1)
       connection.query(`
-      SELECT app_id, title
+      SELECT *
       FROM Game
       WHERE positive_ratio > 80 AND user_reviews > 20
       ORDER BY price_final
