@@ -9,13 +9,7 @@ const config = require('../config.json');
 export default function UsersPage() {
   // We use the setState hook to persist information across renders (such as the result of our API calls)
   // const [appOfTheDay, setAppOfTheDay] = useState({});
-  // const [author, setAuthor] = useState();
-  const [selectedAppId, setSelectedAppId] = useState('');
 
-  //TODO: dont' hard code these
-  const do_not_want_to_operate = 'win';
-  const want_to_operate = 'mac';
-  const input_month = 6;
 
 
   // Here, we define the columns of the "Top Songs" table. The songColumns variable is an array (in order)
@@ -32,7 +26,7 @@ export default function UsersPage() {
     {
       field: 'products',
       headerName: 'Number of products in user library',
-      renderCell: (row) => row.user_id // A Link component is used just for formatting purposes
+      renderCell: (row) => row.products // A Link component is used just for formatting purposes
     },
     {
       field: 'reviews',

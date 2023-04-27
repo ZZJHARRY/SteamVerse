@@ -5,13 +5,11 @@ import { createTheme } from "@mui/material/styles";
 
 import NavBar from './components/NavBar';
 import HomePage from './pages/HomePage';
-import AlbumsPage from './pages/AlbumsPage';
-import SongsPage from './pages/SongsPage';
-import AlbumInfoPage from './pages/AlbumInfoPage'
 import RecommendationPage from './pages/RecommendationPage'
 import GamesPage from './pages/GamesPage'
 import FilteringPage from './pages/FilteringPage'
 import SystemsPage from "./pages/SystemsPage";
+import UsersPage from "./pages/UsersPage";
 
 // createTheme enables you to customize the look and feel of your app past the default
 // in this case, we only change the color scheme

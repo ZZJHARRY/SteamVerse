@@ -23,7 +23,7 @@ export default function FilteringPage() {
   
 
   useEffect(() => {
-    fetch(`http://${config.server_host}:${config.server_port}/search_filter`)
+    fetch(`http://${config.server_host}:${config.server_port}/filtering`)
       .then(res => res.json())
       .then(resJson => {
         const appsWithId = resJson.map((app) => ({ id: app.app_id, ...app }));
