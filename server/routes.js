@@ -931,19 +931,40 @@ const users = async function(req, res) {
   //  given a app_id, returns all information about the user
   //if type_of_user = 
   const type_of_user = req.params.type_of_user;
+  const page = req.query.page;
+  const pageSize = req.query.page_size ?? 10;
+  if (!page){
   connection.query(`
       SELECT *
-      FROM Users
+      FROM User
       ORDER BY ${type_of_user} DESC
       LIMIT 10
       `, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
-      res.json({});
+      res.json([]);
     } else {
       res.json(data);
     }
-  });
+  });} else{
+  
+    const off_set = pageSize*(page-1);
+    connection.query(`
+    SELECT *
+    FROM User
+    ORDER BY ${type_of_user} DESC
+    LIMIT ${pageSize}
+    OFFSET ${off_set}
+    `, (err, data) => {
+  if (err || data.length === 0) {
+    console.log(err);
+    res.json([]);
+  } else {
+    res.json(data);
+  }
+});
+
+  }
 }
 
 
