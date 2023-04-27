@@ -38,9 +38,8 @@ export default function App() {
           <Route path="/games" element={<GamesPage />} />
           <Route path="/filtering" element={<FilteringPage />} /> 
           <Route path="/system" element={<SystemsPage />} />
-          <Route path="/albums" element={<AlbumsPage />} />
-          <Route path="/albums/:album_id" element={<AlbumInfoPage />} />
-          <Route path="/songs" element={<SongsPage />} />
+          <Route path="/users" element={<UsersPage />} />
+
         </Routes>
       </BrowserRouter>
     </ThemeProvider>
