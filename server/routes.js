@@ -677,7 +677,7 @@ const recommendation = async function(req, res) {
  ************************/
 //Route 2: /games/system/:type_of_system
 const game_system = async function(req, res) {
-  const want_to_operate = req.params.want_to_operate;
+  const want_to_operate = req.params.type_of_system;
   connection.query(` 
    WITH Games_Operate_on_Mac AS (
    SELECT g.title, g.app_id
@@ -696,7 +696,7 @@ LIMIT 5;
   `, (err, data) => {
     if (err || data.length === 0) {
       console.log(err);
-      res.json({});
+      res.json([]);
     } else {
       res.json(data);
     }
@@ -728,7 +728,7 @@ const stat = async function(req, res){
       `, (err, data) =>{
       if (err || data.length === 0) {
           console.log(err);
-          res.json({});
+          res.json([]);
       } 
       else{
           res.json(data);
@@ -753,7 +753,7 @@ const stat = async function(req, res){
           `, (err, data) =>{
           if (err || data.length === 0) {
               console.log(err);
-              res.json({});
+              res.json([]);
           } 
           else{
               res.json(data);
