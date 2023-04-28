@@ -968,6 +968,18 @@ const users = async function(req, res) {
   }
 }
 
+//GET /get_img/:app_title
+const get_img = async function(req, res) {
+  const app_title = req.params.app_title;
+
+  fetch(`https://serpapi.com/search.json?q=${app_title}&ijn=1&engine=google_images&api_key=628fb8b17e5f95b8d9f008f1c0489473152a76dcf0b3ecbd72794abf626a14a4`)
+  .then(respond => respond.json())
+  .then(resJson => {
+    res.json({img_url:resJson["images_results"][0]["thumbnail"]});
+    // console.log(resJson["images_results"][0]["thumbnail"]);
+  });
+
+}
 
 
 
@@ -992,4 +1004,5 @@ module.exports = {
   system,
   search_filter,
   users,
+  get_img,
 }

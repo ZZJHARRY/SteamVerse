@@ -28,9 +28,8 @@ app.get('/system/system_type/:type_of_system', routes.game_system);
 app.get('/system/stat', routes.stat);
 app.get('/system/:app_id', routes.system);
 app.get('/users/:type_of_user', routes.users);
-
-
 app.get('/search_filter',routes.search_filter);
+app.get('/get_img/:app_title',routes.get_img);
 
 
 
