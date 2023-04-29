@@ -4,44 +4,13 @@ import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, RadarChart, Radar, Po
 import { NavLink } from 'react-router-dom';
 
 import { formatDuration } from '../helpers/formatter';
-
-import * as React from 'react';
-import { styled } from '@mui/material/styles';
-import Card from '@mui/material/Card';
-import CardHeader from '@mui/material/CardHeader';
-import CardMedia from '@mui/material/CardMedia';
-import CardContent from '@mui/material/CardContent';
-import CardActions from '@mui/material/CardActions';
-import Collapse from '@mui/material/Collapse';
-import Avatar from '@mui/material/Avatar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import { red } from '@mui/material/colors';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import ShareIcon from '@mui/icons-material/Share';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import MoreVertIcon from '@mui/icons-material/MoreVert';
-import CloseIcon from '@mui/icons-material/Close';
-
 const config = require('../config.json');
 
-const ExpandMore = styled((props) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme, expand }) => ({
-  transform: !expand ? 'rotate(0deg)' : 'rotate(180deg)',
-  marginLeft: 'auto',
-  transition: theme.transitions.create('transform', {
-    duration: theme.transitions.duration.shortest,
-  }),
-}));
-
+// SongCard is a modal (a common example of a modal is a dialog window).
+// Typically, modals will conditionally appear (specified by the Modal's open property)
+// but in our implementation whether the Modal is open is handled by the parent component
+// (see HomePage.js for example), since it depends on the state (selectedSongId) of the parent
 export default function AppCard({ appId, handleClose }) {
-  const [expanded, setExpanded] = React.useState(false);
-
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
-  };
   const [appData, setAppData] = useState({});
   const [systemData, setSystemData] = useState({});
   const [imgURL, setImgURL] = useState('');
@@ -107,68 +76,34 @@ export default function AppCard({ appId, handleClose }) {
     }
     os_systems = os_systems.substring(0, os_systems.length - 2)
   }
-  dateStr = "Released on: " +dateStr;
-//   const styles = theme => ({
-//     modalStyle1:{
-//       position:'absolute',
-//       top:'10%',
-//       left:'10%',
-//       overflow:'scroll',
-//       height:'100%',
-//       display:'block'
-//     }
-//   });
+
   return (
     <Modal
       open={true}
       onClose={handleClose}
       style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
-    //   className={styles}
     >
       <Box
         p={3}
-        style={{ background: 'white', borderRadius: '16px', border: '2px solid #000', width: 500 }}
+        style={{ background: 'white', borderRadius: '16px', border: '2px solid #000', width: 600 }}
       >
-    <Card >
-      <CardHeader
-        action={
-        //   <IconButton aria-label="settings">
-        //     <MoreVertIcon />
-        //   </IconButton>
-        <Button onClick={handleClose} style={{ left: '50%', transform: 'translateX(-50%)' }} >
-          <CloseIcon />
-        </Button>
-        }
-        title={appData.title}
-        subheader={dateStr}
-      />
-      <CardMedia
-        component="img"
-        height="300"
-        image={imgURL}
-        alt="Game Image"
-      />
-      <CardContent>
-      <h2>Rating Statistics</h2>
+        <h1>{appData.title}</h1>
+        <p>Release Date: {dateStr}</p>
+
+        <div style={{ margin: 20 }}>
+        <img src={imgURL} width={200} className="PUBG" alt="Game image" />
+        </div>
+        
+
+
+        {/* //TODO */}
+        
+        <h2>Rating Statistics</h2>
         <p>Rating: {appData.rating}</p>
         <p>Positive Ratio: {appData.positive_ratio} %</p>
         <p>Number of User Reviews: {appData.user_reviews}</p>
-      </CardContent>
-      <CardActions disableSpacing>
-        <IconButton aria-label="share">
-          <ShareIcon />
-        </IconButton>
-        <ExpandMore
-          expand={expanded}
-          onClick={handleExpandClick}
-          aria-expanded={expanded}
-          aria-label="show more"
-        >
-          <ExpandMoreIcon />
-        </ExpandMore>
-      </CardActions>
-      <Collapse in={expanded} timeout="auto" unmountOnExit>
-        <CardContent>
+
+
         <h2>System</h2>
         <p>{os_systems}</p>
 
@@ -178,21 +113,48 @@ export default function AppCard({ appId, handleClose }) {
         <p>Original Price: $ {appData.price_original}</p>
         <p>Discount: {appData.discount} % </p>
 
-        </CardContent>
-      </Collapse>
-    </Card>
 
+        {/* <p>Tempo: {songData.tempo} bpm</p>
+        <p>Key: {songData.key_mode}</p> */}
+        {/* <ButtonGroup>
+          <Button disabled={barRadar} onClick={handleGraphChange}>Bar</Button>
+          <Button disabled={!barRadar} onClick={handleGraphChange}>Radar</Button>
+        </ButtonGroup> */}
+        {/* <div style={{ margin: 20 }}>
+          { // This ternary statement returns a BarChart if barRadar is true, and a RadarChart otherwise
+            barRadar
+              ? (
+                <ResponsiveContainer height={250}>
+                  <BarChart
+                    data={chartData}
+                    layout='vertical'
+                    margin={{ left: 40 }}
+                  >
+                    <XAxis type='number' domain={[0, 1]} />
+                    <YAxis type='category' dataKey='name' />
+                    <Bar dataKey='value' stroke='#8884d8' fill='#8884d8' />
+                  </BarChart>
+                </ResponsiveContainer>
+              ) : (
+                <ResponsiveContainer height={250}>
+                  {/* TODO (TASK 21): display the same data as the bar chart using a radar chart */}
+                  {/* Hint: refer to documentation at https://recharts.org/en-US/api/RadarChart */}
+                  {/* Hint: note you can omit the <Legend /> element and only need one Radar element, as compared to the sample in the docs */}
+                  {/* <RadarChart outerRadius={90} width={730} height={250} data={chartData}>
+                    <PolarGrid />
+                    <PolarAngleAxis dataKey="name" />
+                    <PolarRadiusAxis angle={90} domain={[0, 1]} />
+                    <Radar name="value" dataKey="value" stroke="#8884d8" fill="#8884d8" fillOpacity={0.6} />
+                  </RadarChart>
+                </ResponsiveContainer>
+              )
+          }
+        </div> */} 
 
+        <Button onClick={handleClose} style={{ left: '50%', transform: 'translateX(-50%)' }} >
+          Close
+        </Button>
       </Box>
     </Modal>
   );
 }
-
-
-
-        
-
-
-
-
-
