@@ -36,7 +36,7 @@ export default function NavBar() {
     <AppBar position='static'>
       <Container maxWidth='xl'>
         <Toolbar disableGutters>
-          <NavText href='/' text='STEAMIFY' isMain />
+          <NavText href='/' text='STEAMVERSE' isMain />
           <NavText href='/recommendation' text='RECOMMENDATIONS' />
           <NavText href='/games' text='GAMES' />
           <NavText href='/system' text='SYSTEMS' />
