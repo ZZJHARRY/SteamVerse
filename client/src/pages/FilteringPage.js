@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Button, Checkbox, Container, FormControlLabel, Grid, Link, Slider, TextField } from '@mui/material';
+import { Button, Checkbox, Container, FormControlLabel, Divider, Grid, Link, Slider, TextField } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 
 import AppCard from '../components/AppCard';
@@ -90,7 +90,7 @@ export default function FilteringPage() {
       {selectedAppId && <AppCard songId={selectedAppId} handleClose={() => setSelectedAppId(null)} />}
       <h2>Search Games</h2>
       <Grid container spacing={6}>
-        <Grid item xs={8}>
+        <Grid item xs={12}>
           <TextField label='Title' value={title} onChange={(e) => setTitle(e.target.value)} style={{ width: "100%" }}/>
         </Grid>
         {/* <Grid item xs={6}>
