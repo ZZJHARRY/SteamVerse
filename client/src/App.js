@@ -37,6 +37,20 @@ import { mainListItems, secondaryListItems } from './listItems';
 //   },
 // });
 
+function Copyright(props) {
+  return (
+    <Typography variant="body2" color="text.secondary" align="center" {...props}>
+      {'Copyright © '}
+      {/* <Link color="inherit" href="https://mui.com/"> */}
+       Zijian Zhang, Guo Cheng, Jun Wang, Tangchao Chen
+      {/* </Link> */}
+      {' '}
+      {new Date().getFullYear()}
+      {'.'}
+    </Typography>
+  );
+}
+
 const NavText = ({ href, text, isMain }) => {
   return (
     <Typography
@@ -207,15 +221,14 @@ export default function App() {
           <Toolbar />
           <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
           <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/recommendation" element={<RecommendationPage />} />
-          <Route path="/games" element={<GamesPage />} />
-          <Route path="/filtering" element={<FilteringPage />} /> 
-          <Route path="/system" element={<SystemsPage />} />
-          <Route path="/users" element={<UsersPage />} />
-
-        </Routes>
-    
+            <Route path="/" element={<HomePage />} />
+            <Route path="/recommendation" element={<RecommendationPage />} />
+            <Route path="/games" element={<GamesPage />} />
+            <Route path="/filtering" element={<FilteringPage />} /> 
+            <Route path="/system" element={<SystemsPage />} />
+            <Route path="/users" element={<UsersPage />} />
+          </Routes>
+          <Copyright sx={{ pt: 4 }} />
           </Container>
         </Box>
       </Box>
