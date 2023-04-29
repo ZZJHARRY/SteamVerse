@@ -14,6 +14,7 @@ export default function HomePage() {
   const [appOfTheDay, setAppOfTheDay] = useState({});
   // const [author, setAuthor] = useState();
   const [selectedAppId, setSelectedAppId] = useState('');
+  const [imgURL, setImgURL] = useState('');
 
   //TODO: dont' hard code these
   const do_not_want_to_operate = "win";
@@ -33,7 +34,13 @@ export default function HomePage() {
     //TODO:change input month to current month
     fetch(`http://${config.server_host}:${config.server_port}/recommendation/random_recommendation?input_month=${input_month}`)
       .then(res => res.json())
-      .then(resJson => setAppOfTheDay(resJson));
+      .then(resJson => {
+        setAppOfTheDay(resJson);
+        const app_title = encodeURIComponent(resJson.title.trim());
+        fetch(`http://${config.server_host}:${config.server_port}/get_img/${app_title}`)
+        .then(res => res.json())
+        .then(resJson => setImgURL(resJson.img_url));
+      });
 
   //   // TODO (TASK 14): add a fetch call to get the app author (name not pennkey) and store it in the state variable
   //   fetch(`http://${config.server_host}:${config.server_port}/author/name`)
@@ -67,6 +74,10 @@ export default function HomePage() {
         <Link onClick={() => setSelectedAppId(appOfTheDay.app_id)}>{appOfTheDay.title}</Link>
       </h2>
       <img src={PUBG} width={500} className="PUBG" alt="Game image" />
+      <Divider></Divider>
+      <img src={imgURL} width={500} className="Game" alt="Game image" />
+      
+      
 
 
 
