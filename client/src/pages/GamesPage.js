@@ -62,7 +62,7 @@ export default function RecommendationPage() {
       <LazyTable route={`http://${config.server_host}:${config.server_port}/games/games_ratio`} columns={appColumns} />
       <Divider />
 
-      <p>Authors: Guo Cheng, Zijian Zhang, Jun Wang, Tangchao Chen</p>
+      
       
     </Container>
   );

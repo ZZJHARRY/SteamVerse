@@ -81,7 +81,7 @@ export default function SystemsPage() {
       
 
 
-      <p>authors:</p>
+    
       
     </Container>
   );
