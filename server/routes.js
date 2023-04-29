@@ -517,12 +517,14 @@ const recommendation = async function(req, res) {
 
   }else if(type_of_recommendation === "top_game_curr_month_all_time"){
     //case 4
+    const date = new Date();
+    let month = date.getMonth() + 1;
     if (!page){ //return all albums
     connection.query(`
     With cte As(
       Select app_id, positive_ratio / 200 as rate
       From Game
-      Where MONTH(date_release) = ${input_month}),
+      Where MONTH(date_release) = ${month}),
       cte2 As(
         Select count(*) as user_cnt
         From User),
@@ -534,7 +536,7 @@ const recommendation = async function(req, res) {
       From Game g
       Join cte c on c.app_id = g.app_id
       Join cte3 cc on cc.app_id = g.app_id
-      Where MONTH(g.date_release) = ${input_month}
+      Where MONTH(g.date_release) = ${month}
       Order By score DESC    
   `, (err, data) => {
     if (err || data.length === 0) {
@@ -588,7 +590,7 @@ const recommendation = async function(req, res) {
   }else if(type_of_recommendation === "random_recommendation"){
     //case 5
     const date = new Date();
-    let month = date.getMonth();
+    let month = date.getMonth() + 1;
     connection.query(`
     Select app_id, title
     From Game
