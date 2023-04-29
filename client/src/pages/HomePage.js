@@ -7,6 +7,7 @@ import PUBG from '../images/PUBG.jpg';
 import LazyTable from '../components/LazyTable';
 import SongCard from '../components/SongCard';
 import AppCard from '../components/AppCard';
+// import AppCard2 from '../components/AppCard2';
 const config = require('../config.json');
 
 export default function HomePage() {
