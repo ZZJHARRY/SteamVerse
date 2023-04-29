@@ -587,10 +587,12 @@ const recommendation = async function(req, res) {
 
   }else if(type_of_recommendation === "random_recommendation"){
     //case 5
+    const date = new Date();
+    let month = date.getMonth();
     connection.query(`
     Select app_id, title
     From Game
-    Where MONTH(date_release) = ${input_month}
+    Where MONTH(date_release) = ${month}
     Order By Rand()
     Limit 1
           
