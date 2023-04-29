@@ -784,7 +784,7 @@ const games = async function(req, res) {
         SELECT *
         FROM Game
         WHERE date_release < '2020-01-01'
-        AND positive_ratio >= (SELECT max_ratio FROM cte)
+        AND positive_ratio >= (SELECT 0.9*max_ratio FROM cte);
         `,(err,data)=>{
           if (err || data.length === 0){
             console.log(err)
@@ -796,16 +796,16 @@ const games = async function(req, res) {
     } else {// return albums on a certain page
       const off_set = pageSize*(page-1)
       connection.query(`
-      With cte AS (
-        SELECT MAX(positive_ratio) AS max_ratio
-        From Game
-        WHERE date_release >= '2020-01-01')
-      SELECT *
-      FROM Game
-      WHERE date_release < '2020-01-01'
-      AND positive_ratio >= (SELECT max_ratio FROM cte)
-      LIMIT ${pageSize}
-      OFFSET ${off_set}
+     With cte AS (
+          SELECT MAX(positive_ratio) AS max_ratio
+          From Game
+          WHERE date_release >= '2020-01-01')
+        SELECT *
+        FROM Game
+        WHERE date_release < '2020-01-01'
+        AND positive_ratio >= (SELECT 0.9*max_ratio FROM cte)
+        LIMIT ${pageSize}
+        OFFSET ${off_set}
       `,(err, data)=>{
         res.json(data);
       });
