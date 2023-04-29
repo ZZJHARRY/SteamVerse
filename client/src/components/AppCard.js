@@ -13,7 +13,7 @@ const config = require('../config.json');
 export default function AppCard({ appId, handleClose }) {
   const [appData, setAppData] = useState({});
   const [systemData, setSystemData] = useState({});
-  // const [albumData, setAlbumData] = useState({});
+  const [imgURL, setImgURL] = useState('');
 
   const [barRadar, setBarRadar] = useState(true);
 
@@ -34,17 +34,17 @@ export default function AppCard({ appId, handleClose }) {
       .then(res => res.json())
       .then(resJson => {
         setAppData(resJson);
-        // console.log(resJson)
-        // const album_id = resJson.album_id;
-        // fetch(`http://${config.server_host}:${config.server_port}/album/${album_id}`)
-        //   .then(res => res.json())
-        //   .then(resJson => setAlbumData(resJson))
+        const app_title = encodeURIComponent(resJson.title.trim());
+        fetch(`http://${config.server_host}:${config.server_port}/get_img/${app_title}`)
+        .then(res => res.json())
+        .then(resJson => setImgURL(resJson.img_url));
         });
       fetch( `http://${config.server_host}:${config.server_port}/system/${appId}`)
       .then(res => res.json())
       .then(resJson => {
         setSystemData(resJson);
         });
+      
   }, [appId]);
 
   // const chartData = [
@@ -90,8 +90,14 @@ export default function AppCard({ appId, handleClose }) {
         <h1>{appData.title}</h1>
         <p>Release Date: {dateStr}</p>
 
+        <div style={{ margin: 20 }}>
+        <img src={imgURL} width={200} className="PUBG" alt="Game image" />
+        </div>
+        
+
 
         {/* //TODO */}
+        
         <h2>Rating Statistics</h2>
         <p>Rating: {appData.rating}</p>
         <p>Positive Ratio: {appData.positive_ratio} %</p>
@@ -144,6 +150,7 @@ export default function AppCard({ appId, handleClose }) {
               )
           }
         </div> */} 
+
         <Button onClick={handleClose} style={{ left: '50%', transform: 'translateX(-50%)' }} >
           Close
         </Button>
