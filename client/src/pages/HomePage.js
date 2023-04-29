@@ -64,7 +64,7 @@ export default function HomePage() {
 
   return (
     <Container>
-      <h1>Welcome to Steamify!
+      <h1>Welcome to SteamVerse!
       </h1>
       <Divider />
       {/* SongCard is a custom component that we made. selectedSongId && <SongCard .../> makes use of short-circuit logic to only render the SongCard if a non-null song is selected */}
@@ -73,15 +73,8 @@ export default function HomePage() {
         {/* <Link onClick={() => setSelectedSongId(songOfTheDay.song_id)}>{songOfTheDay.title}</Link> */}
         <Link onClick={() => setSelectedAppId(appOfTheDay.app_id)}>{appOfTheDay.title}</Link>
       </h2>
-      <img src={PUBG} width={500} className="PUBG" alt="Game image" />
+      <img src={PUBG} width={1000} className="PUBG" alt="Game image" />
       <Divider></Divider>
-      <img src={imgURL} width={500} className="Game" alt="Game image" />
-      
-      
-
-
-
-      <p>Authors: Guo Cheng, Zijian Zhang, Jun Wang, Tangchao Chen</p>
       
     </Container>
   );
