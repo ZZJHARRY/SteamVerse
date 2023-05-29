@@ -1,4 +1,4 @@
-# CIS 5500 Group 88
+# SteamVerse
 
 Team members: Zijian Zhang, Guo Cheng, Jun Wang, Tangchao Chen
 
