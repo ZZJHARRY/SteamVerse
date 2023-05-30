@@ -10,33 +10,19 @@ Our website will offer an extensive collection of popular games on Steam since 1
 Architecture
 
 ## Tech Stacks:
-**Kaggle & Google Image** - Data source
+**Kaggle & Google Image** - Data source: We used the Steam Game dataset from Kaggle and images from Google as our data sources.
 
-We used the Steam Game dataset from Kaggle and images from Google as our data sources.
+**Colab** - Data Processing, EDA: We utilized Google Colab for EDA and data processing to deal with some missing data and outliers.
 
-**Colab** - Data Processing, EDA
+**MySQL & AWS RDS** - Database: Then, for the database, we decided to use MySQL and AWS RDS to store the data and define the structures for the relations in our database.
 
-We utilized Google Colab for EDA and data processing to deal with some missing data and outliers.
+**Express.js** - Backend, Routes: For our website, we use Express.js as our backend server, and we implemented our REST API using the express server.
 
-**MySQL & AWS RDS** - Database
+**React.js** - Frontend, User Interface: For the user interface, we chose React as the frontend architecture.
 
-Then, for the database, we decided to use MySQL and AWS RDS to store the data and define the structures for the relations in our database.
+**Node.js** - JavaScript Runtime Environment: We have also used Node.js to provide us with the JavaScript Runtime Environment.
 
-**Express.js** - Backend, Routes
-
-For our website, we use Express.js as our backend server, and we implemented our REST API using the express server.
-
-**React.js** - Frontend, User Interface
-
-For the user interface, we chose React as the frontend architecture.
-
-**Node.js** - JavaScript Runtime Environment
-
-We have also used Node.js to provide us with the JavaScript Runtime Environment.
-
-**MUI** - Website theme manager
-
-Last but not least, we spent some time learning about MUI, which is a powerful tool for react website design, and we utilized MUI to make our website more visually engaging.
+**MUI** - Website theme manager: Last but not least, we spent some time learning about MUI, which is a powerful tool for react website design, and we utilized MUI to make our website more visually engaging.
 
 ## Application Architecture:
 Our application is composed of two main components, the client which interacts with the users and the server which interacts with the database.
