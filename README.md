@@ -10,25 +10,32 @@ Our website will offer an extensive collection of popular games on Steam since 1
 Architecture
 
 ## Tech Stacks:
-Kaggle & Google Image - Data source
+**Kaggle & Google Image** - Data source
+
 We used the Steam Game dataset from Kaggle and images from Google as our data sources.
 
-Colab - Data Processing, EDA
+**Colab** - Data Processing, EDA
+
 We utilized Google Colab for EDA and data processing to deal with some missing data and outliers.
 
-MySQL & AWS RDS - Database
+**MySQL & AWS RDS** - Database
+
 Then, for the database, we decided to use MySQL and AWS RDS to store the data and define the structures for the relations in our database.
 
-Express.js - Backend, Routes
+**Express.js** - Backend, Routes
+
 For our website, we use Express.js as our backend server, and we implemented our REST API using the express server.
 
-React - Frontend, User Interface
+**React.js** - Frontend, User Interface
+
 For the user interface, we chose React as the frontend architecture.
 
-Node.js - JavaScript Runtime Environment
+**Node.js** - JavaScript Runtime Environment
+
 We have also used Node.js to provide us with the JavaScript Runtime Environment.
 
-MUI - Website theme manager
+**MUI** - Website theme manager
+
 Last but not least, we spent some time learning about MUI, which is a powerful tool for react website design, and we utilized MUI to make our website more visually engaging.
 
 ## Application Architecture:
