@@ -1,3 +1,5 @@
+> Note: This repository is forked from my UPenn Github, and this project showcases the ability in Databases, Experience building backend systems, full stack engineering, UI/UX design.
+
 # SteamVerse
 
 Team members: Zijian Zhang, Guo Cheng, Jun Wang, Tangchao Chen
